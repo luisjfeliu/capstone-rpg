@@ -8,15 +8,27 @@ healing you, or unleashing a Fireball.
 
 Built for the Kaggle **AI Agents: Intensive Vibe Coding Capstone Project**
 (Freestyle track) with the **Google Agent Development Kit (ADK)**, Gemini, and
-`agents-cli`.
+`agents-cli` — see the
+[Kaggle writeup](https://www.kaggle.com/competitions/vibecoding-agents-capstone-project/writeups/dungeon-of-the-forgotten-king-a-cooperative-multi).
 
 ```
-  _  __          ___   ___ ___   _                    _
- | |/ /___ _  _ / / | | _ | _ \ /_\  __ _ ___ _ _  __| |___
- | ' </ _ | || < <| | |   |  _// _ \/ _` / -_) ' \/ _` (_-<
- |_|\_\___/\_,_|_\|_| |_|_|_| /_/ \_\__, \___|_||_\__,_/__/
-                                    |___/
+ ___ ___  ___  ___  ___ _____ _____ ___ _  _   _  _____ _  _  ___
+| __/ _ \| _ \/ __|/ _ \_   _|_   _| __| \| | | |/ /_ _| \| |/ __|
+| _| (_) |   / (_ | (_) || |   | | | _|| .` | | ' < | || .` | (_ |
+|_| \___/|_|_\\___|\___/ |_|   |_| |___|_|\_| |_|\_\___|_|\_|\___|
 ```
+
+## What it looks like
+
+The Game Master opens the game itself — setting the scene and asking you to
+choose your character in plain English:
+
+![The GM greets the player and asks them to choose a character](docs/screenshot_gm_greeting.png)
+
+Combat renders the monster in ASCII art next to a live party-status panel whose
+numbers come from the deterministic engine — never from the model:
+
+![Combat with a Skeleton Warrior: ASCII art, live party status, spell menu](docs/screenshot_combat.png)
 
 ## The problem
 
@@ -133,13 +145,15 @@ death, victory, and the companion's cooperative logic — executed with `behave`
 Agent quality is measured with `agents-cli eval`: a dataset of game scenarios
 (`tests/eval/datasets/basic-dataset.json`) is run against the live GM agent and
 graded by an LLM judge (`tests/eval/eval_config.yaml`). Recent runs score
-**4.9–5.0 / 5** across 8 cases (results in `artifacts/grade_results/`).
+**4.875–5.0 / 5** across 8 cases (results in `artifacts/grade_results/`).
 The eval loop caught real bugs during development — the GM asking for
 confirmation instead of executing multi-step commands (4.125 → 4.875 after
 instruction fixes), later narrating hallucinated HP numbers that contradicted
 the live status panel (fixed with a no-invented-numbers rule), and that rule
 initially over-firing to suppress legitimate status reports (caught by the
 eval suite at 1.0/5 and fixed the same day).
+
+![Eval report: custom_response_quality mean 4.875](docs/screenshot_eval_report.png)
 
 ## Local end-to-end runbook
 
@@ -177,6 +191,7 @@ capstone-rpg/
 │   ├── integration/        # Live agent stream test, MCP round-trip test
 │   └── eval/               # Eval dataset + LLM-judge config
 ├── deployment/terraform/   # Optional infra-as-code (single-project setup)
+├── docs/                   # README screenshots
 ├── RUNBOOK.md              # Local end-to-end verification steps
 ├── DEPLOYMENT.md           # GCP deployment reproduction guide
 └── SUBMISSION_CHECKLIST.md # Kaggle submission checklist
