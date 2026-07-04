@@ -96,7 +96,7 @@ import json, vertexai
 from vertexai import agent_engines
 rn = json.load(open('deployment_metadata.json'))['remote_agent_runtime_id']
 vertexai.init(project=rn.split('/')[1], location=rn.split('/')[3])
-agent_engines.delete(rn)
+agent_engines.delete(rn, force=True)  # force: also removes child sessions
 print('deleted', rn)
 "
 ```
