@@ -89,7 +89,8 @@ deprecated = "ignore"
 
 [tool.codespell]
 ignore-words-list = "rouge"
-skip = "./locust_env/*,uv.lock,.venv,./frontend,**/package-lock.json"
+# artifacts/ holds generated eval traces (LLM narration - "singed" is a word)
+skip = "./locust_env/*,uv.lock,.venv,./frontend,**/package-lock.json,./artifacts"
 
 
 
