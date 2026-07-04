@@ -31,18 +31,16 @@ def clear_screen():
 
 
 def show_banner():
+    # figlet "small" font: uvx pyfiglet -f small "FORGOTTEN KING"
     banner = r"""
-[bold red]  _  __          ___   ___ ___   _                    _      [/bold red]
-[bold red] | |/ /___ _  _ / / | | _ | _ \ /_\  __ _ ___ _ _  __| |___  [/bold red]
-[bold yellow] | ' </ _ | || < <| | |   |  _// _ \/ _` / -_) ' \/ _` (_-<  [/bold yellow]
-[bold yellow] |_|\_\___/\_,_|_\|_| |_|_|_| /_/ \_\__, \___|_||_\__,_/__/  [/bold yellow]
-[bold green]                                    |___/                    [/bold green]
+[bold red] ___ ___  ___  ___  ___ _____ _____ ___ _  _   _  _____ _  _  ___ [/bold red]
+[bold red]| __/ _ \| _ \/ __|/ _ \_   _|_   _| __| \| | | |/ /_ _| \| |/ __|[/bold red]
+[bold yellow]| _| (_) |   / (_ | (_) || |   | | | _|| .` | | ' < | || .` | (_ |[/bold yellow]
+[bold yellow]|_| \___/|_|_\\___|\___/ |_|   |_| |___|_|\_| |_|\_\___|_|\_|\___|[/bold yellow]
     """
     console.print(Align.center(banner))
     console.print(
-        Align.center(
-            "[bold cyan]Cooperative Multi-Agent RPG - Capstone Project[/bold cyan]\n"
-        )
+        Align.center("[bold cyan]Cooperative Multi-Agent RPG[/bold cyan]\n")
     )
 
 
