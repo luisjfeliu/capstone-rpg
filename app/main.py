@@ -1,6 +1,5 @@
 import logging
 import os
-import time
 import warnings
 
 from google.adk.runners import Runner
@@ -110,6 +109,15 @@ def get_monster_panel():
     return Panel(
         grid, title="[bold red]Combat Encounter[/bold red]", border_style="red"
     )
+
+
+def wait_for_player():
+    """Pauses until the player presses Enter.
+
+    Combat narration used to be wiped after ~1s when the next phase cleared
+    the screen; gating each phase on Enter lets the player read the outcome.
+    """
+    console.input("\n[dim]Press Enter to continue...[/dim]")
 
 
 def run_agent_turn(runner, prompt, session_id, user_id):
@@ -312,9 +320,10 @@ def main():
             if not global_game_state.combat_active:
                 continue
 
-            # Companion's Turn
+            # Companion's Turn - gated on Enter so the player can read the
+            # outcome of their own action first.
+            wait_for_player()
             console.print("\n[bold magenta]Companion's Turn...[/bold magenta]")
-            time.sleep(1)
             companion_res = run_agent_turn(
                 runner_companion,
                 "It is your turn in combat. Get the current status, choose a cooperative tactical action, execute it via tool call, and say your in-character dialogue.",
@@ -344,9 +353,10 @@ def main():
             if not global_game_state.combat_active:
                 continue
 
-            # Monster's Turn
+            # Monster's Turn - gated on Enter so the companion's action stays
+            # readable before the screen refreshes.
+            wait_for_player()
             console.print("\n[bold red]Monster's Turn...[/bold red]")
-            time.sleep(1)
             monster_log = global_game_state.monster_attack()
             gm_monster_narr = run_agent_turn(
                 runner_gm,
