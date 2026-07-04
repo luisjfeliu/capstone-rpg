@@ -205,3 +205,6 @@ tools/a2a-inspector/
 
 # Save games are per-player local state
 savegame.json
+
+# Local submission media (video + cover images), not tracked
+media/
