@@ -1,0 +1,32 @@
+{
+  "eval_cases": [
+    {
+      "eval_case_id": "game_initialization",
+      "prompt": {
+        "role": "user",
+        "parts": [{"text": "Start the game. Who can I choose as my character and what is our goal?"}]
+      }
+    },
+    {
+      "eval_case_id": "select_wizard",
+      "prompt": {
+        "role": "user",
+        "parts": [{"text": "I want to select the Wizard class. My name is Gandalf."}]
+      }
+    },
+    {
+      "eval_case_id": "route_description",
+      "prompt": {
+        "role": "user",
+        "parts": [{"text": "Get the available routes for this level and describe them to me."}]
+      }
+    },
+    {
+      "eval_case_id": "choose_route_left",
+      "prompt": {
+        "role": "user",
+        "parts": [{"text": "Let's choose the left route."}]
+      }
+    }
+  ]
+}
