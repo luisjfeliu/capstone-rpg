@@ -118,7 +118,7 @@ def show_scene(gm_text: str, title: str = "Game Master"):
                 _lines_renderable(visible),
                 title=f"[bold blue]{title}[/bold blue]",
                 border_style="blue",
-                subtitle=f"[dim]{indicator}[/dim]",
+                subtitle=f"[bold yellow]{indicator}[/bold yellow]",
                 height=viewport + 2,
             )
         )
