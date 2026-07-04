@@ -1,66 +1,59 @@
 # Kaggle Capstone Project: Submission Checklist
 
-To ensure your submission meets all criteria for the **Intensive Vibe Coding Capstone Project (Freestyle Track)** by the **July 6, 2026** deadline, follow this checklist.
+Track: **Freestyle** · Deadline: **July 6, 2026, 11:59 PM PT**
+
+A valid submission = Kaggle Writeup (≤ 2,500 words, with a selected track) +
+Media Gallery (cover image required, video required) + attached public video +
+attached public project link. Judging: 30 pts pitch (concept/video/writeup) +
+70 pts implementation (50 technical, 20 documentation). Must demonstrate ≥ 3
+course concepts — this project demonstrates 4: **multi-agent ADK system, MCP
+server, deployability, and agents-cli skills**.
 
 ---
 
-## 1. Codebase Preparation (GitHub)
-- [ ] **Create a Public Git Repository**:
-  - Push the code in `capstone-rpg` to a public repository (GitHub or GitLab).
-  - Ensure the repository is publicly accessible so judges can inspect the code.
-- [ ] **Document the README.md**:
-  - Summarize the RPG game concept.
-  - Explain the multi-agent design (GM and Companion NPC).
-  - Include quickstart instructions for installing dependencies (`agents-cli install`) and running the CLI (`uv run python app/main.py`).
-  - Explain how to execute BDD tests (`uv run behave`) and evaluations (`agents-cli eval run`).
-- [ ] **Verify Code Cleanup**:
-  - Run `agents-cli lint` to check code format and quality constraints.
-  - Double check that there are no hardcoded API keys or personal credentials in `.env` files.
+## 1. Codebase (GitHub) — DONE except push
+- [x] **README.md**: problem, multi-agent design + architecture diagram,
+  quickstart (`agents-cli install`, `uv run python -m app.main`), tests
+  (`uv run behave`, `uv run pytest tests/unit tests/integration`), evals
+  (`agents-cli eval generate` + `agents-cli eval grade`), security notes.
+- [x] **Code quality**: `agents-cli lint` passes clean (ruff, format,
+  codespell, ty). Design comments in `app/agent.py`, `app/engine.py`,
+  `app/mcp_server.py`, `app/tools.py`.
+- [x] **No secrets**: ADC-only auth; no API keys or credentials tracked.
+- [ ] **Create a public GitHub repository** and push `main`; verify it loads
+  in an incognito window.
 
----
+## 2. Evaluation & testing evidence — DONE
+- [x] `uv run behave` → **3 features, 11 scenarios, 59 steps — all passing**.
+- [x] `uv run pytest tests/unit tests/integration` → **15 passed** (engine,
+  tools, live agent stream, MCP stdio round-trip).
+- [x] `agents-cli eval generate` + `agents-cli eval grade` → mean
+  **custom_response_quality 4.875/5** over 8 cases, 0 errors
+  (`artifacts/grade_results/results_*.html`). First run scored 4.125; two
+  instruction fixes driven by judge feedback raised it — include this
+  iteration story in the writeup.
+- [ ] Screenshot the behave summary and the eval HTML report for the writeup.
 
-## 2. Video Demonstration (2–3 Minutes)
-- [ ] **Record a Screenshare Video**:
-  - Showcase the command-line game loop in action using `uv run python app/main.py`.
-  - Record yourself choosing a class (Wizard or Fighter).
-  - Show the Game Master agent generating routes and narrating rooms.
-  - Show at least one combat encounter with the ASCII art rendering.
-  - Demonstrate a turn where the NPC Companion takes a cooperative tactical action.
-- [ ] **Provide a Quick Technical Walkthrough**:
-  - Briefly open the code structure in your IDE.
-  - Show the Gherkin feature files in `features/` to highlight your BDD spec-driven architecture.
-  - Mention your use of the Google ADK and `agents-cli eval` for agent quality metrics.
-- [ ] **Upload and Host the Video**:
-  - Upload the video to YouTube (as public or unlisted), Loom, or Google Drive (ensure public viewing access is enabled).
+## 3. Deployment (adds Implementation Quality points)
+- [x] `agents-cli deploy --project kaggle-ai-agents-478322` → Vertex AI Agent
+  Runtime; runtime ID recorded in `deployment_metadata.json`.
+- [x] Remote smoke test: `uv run python scripts/remote_smoke.py` returns live
+  GM narration from the deployed runtime.
+- [x] Reproduction documented in `DEPLOYMENT.md` (judges reward reproducible
+  deployment docs; a live public endpoint is NOT required).
 
----
+## 4. Video (≤ 5 minutes, YouTube) — USER ACTION
+- [ ] Record per `video_script.md`: problem (30s) → why agents + architecture
+  (60s) → live CLI demo with GM-initiated character choice, ASCII combat, and
+  the companion's cooperative turn (2m) → build walkthrough: Gherkin specs,
+  eval report, deploy (70s) → close (20s).
+- [ ] Upload to YouTube (public or unlisted).
 
-## 3. Evaluation & Testing Validation
-- [ ] **Run all BDD scenarios**:
-  - Execute `uv run behave` and screenshot or copy the terminal output showing `9 scenarios passed, 52 steps passed`.
-- [ ] **Execute the Agent Evaluator**:
-  - Run `agents-cli eval run` to regenerate the traces and check scores.
-  - Locate the generated HTML results file (`artifacts/grade_results/results_*.html`) and open it in a browser to inspect the detailed LLM-as-a-judge feedback.
-- [ ] **Add test outputs to documentation**:
-  - Include the test and evaluation results in your Kaggle Writeup to demonstrate technical quality.
-
----
-
-## 4. Deployment (Optional but Recommended)
-- [ ] **Decide on Deployment**:
-  - While live deployment is not strictly mandatory for the capstone, presenting a deployed agent adds major points to the **Implementation Quality** and **Solution Design** criteria.
-- [ ] **Deploy to Agent Runtime**:
-  - Run `agents-cli deploy` inside `capstone-rpg` to package the GM agent and deploy it to the Google Cloud Gemini Enterprise platform.
-  - Ensure your GCP project permissions (`kaggle-ai-agents-478322`) are active and your gcloud CLI is authenticated.
-
----
-
-## 5. Submit to Kaggle
-- [ ] **Format the Kaggle Writeup**:
-  - Copy the drafted content from your `kaggle_writeup.md` artifact.
-  - Publish the writeup on the Kaggle competition discussion panel or form as requested by the competition organizers.
-- [ ] **Fill the Submission Form**:
-  - Provide the URL of your public GitHub repository.
-  - Provide the link to your video demonstration.
-  - Include the deployed agent link or registration endpoint (if deployed).
-  - Submit before the deadline: **July 6, 2026, at 11:59 PM PT**.
+## 5. Kaggle Writeup + submission — USER ACTION
+- [ ] Create the Writeup from `kaggle_writeup.md` (title, subtitle, ≤ 2,500
+  words); **select the Freestyle track** (required to submit).
+- [ ] Media Gallery: attach a **cover image** (required) + the video.
+- [ ] Attach the **public project link** (GitHub repo URL — includes setup
+  instructions, satisfying the "detailed setup instructions" requirement).
+- [ ] Click **Submit** (a saved draft does not count) before
+  **July 6, 2026, 11:59 PM PT**.

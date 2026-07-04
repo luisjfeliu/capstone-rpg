@@ -4,7 +4,7 @@
       "eval_case_id": "game_initialization",
       "prompt": {
         "role": "user",
-        "parts": [{"text": "Start the game. Who can I choose as my character and what is our goal?"}]
+        "parts": [{"text": "A new adventurer has arrived at the dungeon entrance. Greet them, set the scene, and ask them to choose their character."}]
       }
     },
     {
@@ -18,14 +18,42 @@
       "eval_case_id": "route_description",
       "prompt": {
         "role": "user",
-        "parts": [{"text": "Get the available routes for this level and describe them to me."}]
+        "parts": [{"text": "Create a Fighter named Aragorn for me, then describe the available routes for this level so I can pick one."}]
       }
     },
     {
-      "eval_case_id": "choose_route_left",
+      "eval_case_id": "choose_route_and_enter",
       "prompt": {
         "role": "user",
-        "parts": [{"text": "Let's choose the left route."}]
+        "parts": [{"text": "Create a Wizard named Gandalf, then take the left path and enter the first room. If a monster appears, describe it vividly."}]
+      }
+    },
+    {
+      "eval_case_id": "player_combat_action",
+      "prompt": {
+        "role": "user",
+        "parts": [{"text": "Create a Wizard named Gandalf, choose the forward route, and enter the first room. When the monster appears, I cast Fireball at it - resolve my attack and narrate the outcome."}]
+      }
+    },
+    {
+      "eval_case_id": "companion_turn_narration",
+      "prompt": {
+        "role": "user",
+        "parts": [{"text": "Create a Fighter named Aragorn, take the left path, and enter the first room. My companion Eldrin then performed this turn: 'Eldrin casts Fireball at the monster.' Execute Eldrin's spell and narrate the action's visual effect and result."}]
+      }
+    },
+    {
+      "eval_case_id": "party_status_query",
+      "prompt": {
+        "role": "user",
+        "parts": [{"text": "Create a Fighter named Conan, then report how our party is doing: current health, gold, and inventory."}]
+      }
+    },
+    {
+      "eval_case_id": "invalid_class_recovery",
+      "prompt": {
+        "role": "user",
+        "parts": [{"text": "I want to play as a Bard named Lute."}]
       }
     }
   ]

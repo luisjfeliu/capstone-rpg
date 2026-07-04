@@ -1,4 +1,11 @@
 {
   "remote_agent_runtime_id": "None",
-  "deployment_timestamp": "None"
+  "deployment_timestamp": "None",
+  "pending_operation": {
+    "operation_name": "projects/463846508452/locations/us-east1/reasoningEngines/3572163745062846464/operations/4353860780915949568",
+    "project": "kaggle-ai-agents-478322",
+    "location": "us-east1",
+    "deployment_target": "agent_runtime",
+    "started_at": "2026-07-04T02:55:07.431909+00:00"
+  }
 }

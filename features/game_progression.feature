@@ -31,3 +31,14 @@ Feature: Game Progression and Path Selection
     When they successfully clear all rooms in the route
     And they advance to the next level
     Then the game is won and the story concludes
+
+  Scenario: The GM creates the party through the select_character tool
+    Given the game engine state is reset
+    When the GM calls the select_character tool with class "Wizard" and name "Gandalf"
+    Then the tool reports success
+    And the global party has a "Wizard" player named "Gandalf" and companion "Garrick" the "Fighter"
+
+  Scenario: The select_character tool rejects an unknown class
+    Given the game engine state is reset
+    When the GM calls the select_character tool with class "Bard" and name "Lute"
+    Then the tool reports an error and no party is created
