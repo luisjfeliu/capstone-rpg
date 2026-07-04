@@ -20,6 +20,11 @@ Built for the Kaggle **AI Agents: Intensive Vibe Coding Capstone Project**
 
 ## What it looks like
 
+**▶ [Watch the demo video (4:39)](docs/capstone_demo.mp4)** — a narrated,
+fully played-through run: GM-initiated character creation, combat with the
+companion's own tactical turn, save & resume, plus the BDD/eval/deploy story.
+(GitHub plays the video right in the browser.)
+
 The Game Master opens the game itself — setting the scene and asking you to
 choose your character in plain English:
 
