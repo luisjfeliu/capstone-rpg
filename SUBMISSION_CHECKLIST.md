@@ -25,7 +25,7 @@ server, deployability, and agents-cli skills**.
 
 ## 2. Evaluation & testing evidence — DONE
 - [x] `uv run behave` → **3 features, 11 scenarios, 59 steps — all passing**.
-- [x] `uv run pytest tests/unit tests/integration` → **20 passed** (engine,
+- [x] `uv run pytest tests/unit tests/integration` → **23 passed** (engine,
   tools, live agent stream, MCP stdio round-trip).
 - [x] `agents-cli eval generate` + `agents-cli eval grade` → mean
   **custom_response_quality 4.875/5** over 8 cases, 0 errors
