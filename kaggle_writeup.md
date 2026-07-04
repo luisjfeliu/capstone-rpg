@@ -60,7 +60,7 @@ The project was built specification-first with AI pair-programming, using the co
 
 That loop caught real behavioral bugs. The first graded run scored **4.125/5**: the judge flagged that the GM asked for confirmation instead of executing multi-step commands ("create a Wizard, then take the left path…") and that it rigidly presented routes after character creation even when the player had asked for something else. Two targeted instruction changes raised the same dataset to **4.875/5**. Playtesting later exposed the GM narrating hallucinated HP numbers that contradicted the live status panel; a "never invent numbers — describe condition qualitatively" rule fixed it (**5.0/5**) — and when that rule over-fired and suppressed legitimate status reports, the eval suite caught the regression at 1.0/5 on the status-query case, which a sharpened rule fixed the same day (**4.875–5.0/5** across runs). Evals-as-regression-tests, working as advertised.
 
-Classic testing runs alongside: 15 pytest cases (engine math, tool validation, a live agent streaming test, the MCP round-trip) and `agents-cli lint` (ruff, formatting, codespell, type checking) all pass clean.
+Classic testing runs alongside: 23 pytest cases (engine math, tool validation, a live agent streaming test, the MCP round-trip) and `agents-cli lint` (ruff, formatting, codespell, type checking) all pass clean.
 
 ## Deployment
 
@@ -69,7 +69,7 @@ The GM agent is deployed to **Vertex AI Agent Runtime** with `agents-cli deploy`
 ## Results
 
 - **Playable game**: a complete 7-level dungeon crawl in the terminal — GM-initiated character creation in natural language, ASCII-art monsters, three-way route choices, potions, XP/leveling, and a companion that visibly saves your life.
-- **Rules that hold**: 11/11 BDD scenarios and 15/15 tests green; the LLM never owns a number.
+- **Rules that hold**: 11/11 BDD scenarios and 23/23 tests green; the LLM never owns a number.
 - **Measured quality**: LLM-judge score improved 4.125 → 4.875/5 through the eval loop, with the judge's feedback directly driving instruction fixes.
 - **Four course concepts in production**: multi-agent ADK system, MCP server, deployability (Agent Runtime), and agents-cli skills across scaffold/lint/eval/deploy.
 
