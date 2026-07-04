@@ -2,6 +2,7 @@ import json
 import logging
 import os
 import sys
+import textwrap
 import warnings
 from pathlib import Path
 
@@ -17,6 +18,7 @@ from rich.panel import Panel
 from rich.prompt import Confirm, Prompt
 from rich.segment import Segment, Segments
 from rich.table import Table
+from rich.text import Text
 
 from app.agent import companion_agent, root_agent
 from app.engine import MONSTER_ASCII, global_game_state
@@ -218,14 +220,18 @@ def get_monster_panel():
 
     desc = f"[bold red]{m.name}[/bold red]\nHP: {m.hp} / {m.max_hp}\nAttack: {m.attack}\n\n"
 
-    art_lines = art.strip().split("\n")
+    # Dedent instead of strip(): strip() removed only the FIRST line's
+    # leading spaces, knocking the sprite's head out of alignment.
+    art_lines = textwrap.dedent(art).strip("\n").split("\n")
     max_art_len = max(len(line) for line in art_lines)
     padded_art = "\n".join(line.ljust(max_art_len) for line in art_lines)
 
     grid = Table.grid(expand=True)
     grid.add_column("Art", width=max_art_len + 4)
     grid.add_column("Stats")
-    grid.add_row(padded_art, desc)
+    # Text() renders the art verbatim - as a plain string, rich would parse
+    # bracketed face parts like "[o o]" as markup tags and swallow them.
+    grid.add_row(Text(padded_art, style="bold green"), desc)
 
     return Panel(
         grid, title="[bold red]Combat Encounter[/bold red]", border_style="red"
