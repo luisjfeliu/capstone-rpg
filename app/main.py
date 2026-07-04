@@ -1,9 +1,11 @@
 import json
 import logging
 import os
+import sys
 import warnings
 from pathlib import Path
 
+import readchar
 from google.adk.runners import Runner
 from google.adk.sessions import InMemorySessionService
 from google.genai import types
@@ -13,6 +15,7 @@ from rich.console import Console
 from rich.markdown import Markdown
 from rich.panel import Panel
 from rich.prompt import Confirm, Prompt
+from rich.segment import Segment, Segments
 from rich.table import Table
 
 from app.agent import companion_agent, root_agent
@@ -53,12 +56,82 @@ def gm_panel(text: str, title: str = "Game Master") -> Panel:
     )
 
 
+BANNER_HEIGHT = 8  # art (1 leading blank + 4 lines + 1 trailing) + subtitle + blank
+
+
+def _render_lines(renderable, width: int) -> list:
+    """Renders any rich renderable to a list of terminal lines."""
+    options = console.options.update_width(width)
+    return console.render_lines(renderable, options, pad=False)
+
+
+def _lines_renderable(lines: list) -> Segments:
+    """Re-packages rendered lines so they can be printed inside a Panel."""
+    segments = []
+    for line in lines:
+        segments.extend(line)
+        segments.append(Segment.line())
+    return Segments(segments)
+
+
 def show_scene(gm_text: str, title: str = "Game Master"):
-    """Redraws the screen: banner, GM narration, and the party status panel."""
-    clear_screen()
-    show_banner()
-    console.print(gm_panel(gm_text, title))
-    console.print(get_status_panel())
+    """Redraws the screen: banner, GM narration, and the party status panel.
+
+    The scene is sized to the terminal: banner and status panel are fixed,
+    and the GM narration gets whatever height is left between them. When the
+    narration is taller than that, it becomes a scrollable viewport
+    (arrows / j / k / PgUp / PgDn, Enter to continue) with a line-range
+    indicator, so the player never has to scroll the terminal itself.
+    Non-interactive runs (piped stdin, CI) fall back to a plain print.
+    """
+    status = get_status_panel()
+    term = console.size
+    status_height = len(_render_lines(status, term.width))
+    inner_width = term.width - 4  # panel borders + padding
+    lines = _render_lines(Markdown(gm_text), inner_width)
+    # Space for narration = terminal minus banner, status, panel borders,
+    # and one line of breathing room for the upcoming input prompt.
+    viewport = max(5, term.height - BANNER_HEIGHT - status_height - 2 - 1)
+
+    if len(lines) <= viewport or not sys.stdin.isatty():
+        clear_screen()
+        show_banner()
+        console.print(gm_panel(gm_text, title))
+        console.print(status)
+        return
+
+    offset = 0
+    max_offset = len(lines) - viewport
+    while True:
+        clear_screen()
+        show_banner()
+        visible = lines[offset : offset + viewport]
+        indicator = (
+            f"{'▲ ' if offset else ''}{'▼ ' if offset < max_offset else ''}"
+            f"lines {offset + 1}-{offset + len(visible)} of {len(lines)}"
+            " · ↑/↓ scroll · Enter continue"
+        )
+        console.print(
+            Panel(
+                _lines_renderable(visible),
+                title=f"[bold blue]{title}[/bold blue]",
+                border_style="blue",
+                subtitle=f"[dim]{indicator}[/dim]",
+                height=viewport + 2,
+            )
+        )
+        console.print(status)
+        key = readchar.readkey()
+        if key in (readchar.key.UP, "k"):
+            offset = max(0, offset - 1)
+        elif key in (readchar.key.DOWN, "j"):
+            offset = min(max_offset, offset + 1)
+        elif key in (readchar.key.PAGE_DOWN, " "):
+            offset = min(max_offset, offset + viewport)
+        elif key == readchar.key.PAGE_UP:
+            offset = max(0, offset - viewport)
+        elif key in (readchar.key.ENTER, "\r", "q"):
+            break
 
 
 def save_game() -> None:
