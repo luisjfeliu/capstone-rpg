@@ -1,6 +1,8 @@
+import json
 import logging
 import os
 import warnings
+from pathlib import Path
 
 from google.adk.runners import Runner
 from google.adk.sessions import InMemorySessionService
@@ -8,14 +10,20 @@ from google.genai import types
 from rich.align import Align
 from rich.box import ROUNDED
 from rich.console import Console
+from rich.markdown import Markdown
 from rich.panel import Panel
-from rich.prompt import Prompt
+from rich.prompt import Confirm, Prompt
 from rich.table import Table
 
 from app.agent import companion_agent, root_agent
 from app.engine import MONSTER_ASCII, global_game_state
 
 console = Console()
+
+# Save games hold the engine snapshot only (party, gold, level, routes).
+# The LLM conversation lives in an in-memory ADK session and is not saved -
+# on resume the GM re-orients itself from get_game_status.
+SAVE_PATH = Path(__file__).resolve().parent.parent / "savegame.json"
 
 
 def clear_screen():
@@ -36,6 +44,50 @@ def show_banner():
             "[bold cyan]Cooperative Multi-Agent RPG - Capstone Project[/bold cyan]\n"
         )
     )
+
+
+def gm_panel(text: str, title: str = "Game Master") -> Panel:
+    """Renders a GM response as a panel.
+
+    The model narrates in Markdown (**bold**, lists, headers), so wrap the
+    text in rich's Markdown renderer instead of printing it raw.
+    """
+    return Panel(
+        Markdown(text), title=f"[bold blue]{title}[/bold blue]", border_style="blue"
+    )
+
+
+def show_scene(gm_text: str, title: str = "Game Master"):
+    """Redraws the screen: banner, GM narration, and the party status panel."""
+    clear_screen()
+    show_banner()
+    console.print(gm_panel(gm_text, title))
+    console.print(get_status_panel())
+
+
+def save_game() -> None:
+    SAVE_PATH.write_text(json.dumps(global_game_state.to_save_dict(), indent=2))
+    console.print(f"[bold green]Game saved to {SAVE_PATH.name}. Farewell![/bold green]")
+
+
+def try_resume_game() -> bool:
+    """Offers to resume a saved game. Returns True if state was restored."""
+    if not SAVE_PATH.exists():
+        return False
+    try:
+        data = json.loads(SAVE_PATH.read_text())
+    except (json.JSONDecodeError, OSError):
+        console.print("[yellow]Found a corrupted save file - starting fresh.[/yellow]")
+        return False
+    name = data.get("player", {}).get("name", "?")
+    level = data.get("current_level", "?")
+    if not Confirm.ask(
+        f"Found a saved game ({name}, dungeon level {level}). Resume it?",
+        default=True,
+    ):
+        return False
+    global_game_state.restore_save_dict(data)
+    return True
 
 
 def get_status_panel():
@@ -164,87 +216,81 @@ def main():
         agent=companion_agent, session_service=session_service, app_name="app"
     )
 
-    # The GM initiates the game: it greets the adventurer and asks them to
-    # choose a character (Wizard or Fighter) plus a name. The conversation
-    # loops until the GM has called the select_character tool, which populates
-    # global_game_state.player.
-    gm_response = run_agent_turn(
-        runner_gm,
-        "A new adventurer has arrived at the dungeon entrance. Greet them, set the scene, and ask them to choose their character.",
-        session_id,
-        user_id,
-    )
-    console.print(
-        Panel(
-            gm_response, title="[bold blue]Game Master[/bold blue]", border_style="blue"
-        )
-    )
-
-    # Bounded free-text loop: after a few failed rounds fall back to creating
-    # the character directly so the game can never wedge on a misbehaving turn.
-    for _ in range(4):
-        if global_game_state.player:
-            break
-        answer = Prompt.ask("\n[bold cyan]You[/bold cyan]")
-        gm_response = run_agent_turn(runner_gm, answer, session_id, user_id)
-        console.print(
-            Panel(
-                gm_response,
-                title="[bold blue]Game Master[/bold blue]",
-                border_style="blue",
-            )
-        )
-    if not global_game_state.player:
-        console.print(
-            "[yellow]The GM seems distracted - let's set up your hero directly.[/yellow]"
-        )
-        class_choice = Prompt.ask("Choose your class", choices=["Wizard", "Fighter"])
-        player_name = Prompt.ask("Enter your character's name") or "Hero"
-        global_game_state.select_character(class_choice, player_name)
-
-    player_class = global_game_state.player.char_class
-
-    # Introduce level 1. Skipped when the GM already generated and presented
-    # the routes as part of its character-selection follow-through.
-    if not global_game_state.routes:
+    resumed = try_resume_game()
+    if resumed:
+        # The world is restored; the GM (fresh conversation) re-orients
+        # itself from the game status and recaps where the party stands.
         gm_response = run_agent_turn(
             runner_gm,
-            "Initialize level 1. Describe the story introduction, generate routes, and present the three available path choices (left, forward, right) to the user.",
+            "The party has returned to the dungeon to resume their saved quest. "
+            "Call get_game_status, recap their situation in a few sentences "
+            "(who they are, dungeon level, chosen path and progress), and ask "
+            "them to continue onward.",
             session_id,
             user_id,
         )
-
-    clear_screen()
-    show_banner()
-    console.print(
-        Panel(
-            gm_response, title="[bold blue]Game Master[/bold blue]", border_style="blue"
+    else:
+        # The GM initiates the game: it greets the adventurer and asks them
+        # to choose a character (Wizard or Fighter) plus a name. The
+        # conversation loops until the GM has called the select_character
+        # tool, which populates global_game_state.player.
+        gm_response = run_agent_turn(
+            runner_gm,
+            "A new adventurer has arrived at the dungeon entrance. Greet them, set the scene, and ask them to choose their character.",
+            session_id,
+            user_id,
         )
-    )
-    console.print(get_status_panel())
+        console.print(gm_panel(gm_response))
+
+        # Bounded free-text loop: after a few failed rounds fall back to
+        # creating the character directly so the game can never wedge on a
+        # misbehaving turn.
+        for _ in range(4):
+            if global_game_state.player:
+                break
+            answer = Prompt.ask("\n[bold cyan]You[/bold cyan]")
+            gm_response = run_agent_turn(runner_gm, answer, session_id, user_id)
+            console.print(gm_panel(gm_response))
+        if not global_game_state.player:
+            console.print(
+                "[yellow]The GM seems distracted - let's set up your hero directly.[/yellow]"
+            )
+            class_choice = Prompt.ask(
+                "Choose your class", choices=["Wizard", "Fighter"]
+            )
+            player_name = Prompt.ask("Enter your character's name") or "Hero"
+            global_game_state.select_character(class_choice, player_name)
+
+        # Introduce level 1. Skipped when the GM already generated and
+        # presented the routes as part of its character-selection follow-through.
+        if not global_game_state.routes:
+            gm_response = run_agent_turn(
+                runner_gm,
+                "Initialize level 1. Describe the story introduction, generate routes, and present the three available path choices (left, forward, right) to the user.",
+                session_id,
+                user_id,
+            )
+
+    player_class = global_game_state.player.char_class
+    show_scene(gm_response)
 
     while not global_game_state.game_over:
         # 1. Path Selection Loop
         if not global_game_state.selected_route:
             choice = Prompt.ask(
-                "\nChoose your path", choices=["left", "forward", "right"]
+                "\nChoose your path ('quit' to save & exit)",
+                choices=["left", "forward", "right", "quit"],
             )
+            if choice == "quit":
+                save_game()
+                return
             gm_response = run_agent_turn(
                 runner_gm,
                 f"We select the {choice} path. Set the selected route and enter the first room. Start combat if a monster is encountered, otherwise describe the room.",
                 session_id,
                 user_id,
             )
-            clear_screen()
-            show_banner()
-            console.print(
-                Panel(
-                    gm_response,
-                    title="[bold blue]Game Master[/bold blue]",
-                    border_style="blue",
-                )
-            )
-            console.print(get_status_panel())
+            show_scene(gm_response)
             continue
 
         # 2. Combat Loop
@@ -304,17 +350,7 @@ def main():
                 session_id,
                 user_id,
             )
-
-            clear_screen()
-            show_banner()
-            console.print(
-                Panel(
-                    gm_combat_res,
-                    title="[bold blue]Game Master (Player Action)[/bold blue]",
-                    border_style="blue",
-                )
-            )
-            console.print(get_status_panel())
+            show_scene(gm_combat_res, title="Game Master (Player Action)")
 
             # Check if combat ended
             if not global_game_state.combat_active:
@@ -338,17 +374,7 @@ def main():
                 session_id,
                 user_id,
             )
-
-            clear_screen()
-            show_banner()
-            console.print(
-                Panel(
-                    gm_companion_narr,
-                    title="[bold blue]Game Master (Companion Action)[/bold blue]",
-                    border_style="blue",
-                )
-            )
-            console.print(get_status_panel())
+            show_scene(gm_companion_narr, title="Game Master (Companion Action)")
 
             if not global_game_state.combat_active:
                 continue
@@ -364,24 +390,16 @@ def main():
                 session_id,
                 user_id,
             )
-
-            clear_screen()
-            show_banner()
-            console.print(
-                Panel(
-                    gm_monster_narr,
-                    title="[bold blue]Game Master (Monster Action)[/bold blue]",
-                    border_style="blue",
-                )
-            )
-            console.print(get_status_panel())
+            show_scene(gm_monster_narr, title="Game Master (Monster Action)")
 
         else:
-            # Exploration Room Selection
+            # Exploration Room Selection (safe between fights - saving is
+            # only offered here, never mid-combat)
             console.print("\n[bold yellow]Exploration Action:[/bold yellow]")
             console.print("1. [bold green]Move Forward[/bold green] (Enter next room)")
             console.print("2. [bold cyan]Use Potion[/bold cyan]")
-            explore_choice = Prompt.ask("Choose action", choices=["1", "2"])
+            console.print("3. [bold white]Save & Quit[/bold white]")
+            explore_choice = Prompt.ask("Choose action", choices=["1", "2", "3"])
 
             if explore_choice == "1":
                 if (
@@ -402,17 +420,8 @@ def main():
                         session_id,
                         user_id,
                     )
-                clear_screen()
-                show_banner()
-                console.print(
-                    Panel(
-                        gm_response,
-                        title="[bold blue]Game Master[/bold blue]",
-                        border_style="blue",
-                    )
-                )
-                console.print(get_status_panel())
-            else:
+                show_scene(gm_response)
+            elif explore_choice == "2":
                 potion = Prompt.ask(
                     "Choose potion", choices=["Health Potion", "Mana Potion", "Cancel"]
                 )
@@ -423,16 +432,14 @@ def main():
                         session_id,
                         user_id,
                     )
-                    clear_screen()
-                    show_banner()
-                    console.print(
-                        Panel(
-                            gm_response,
-                            title="[bold blue]Game Master[/bold blue]",
-                            border_style="blue",
-                        )
-                    )
-                    console.print(get_status_panel())
+                    show_scene(gm_response)
+            else:
+                save_game()
+                return
+
+    # The run ended for real (victory or defeat) - a finished game should not
+    # resume, so clear any leftover save.
+    SAVE_PATH.unlink(missing_ok=True)
 
     console.print(
         "\n[bold yellow]=================================================[/bold yellow]"
@@ -451,4 +458,9 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except KeyboardInterrupt:
+        console.print(
+            "\n[yellow]Exiting without saving - use 'Save & Quit' in-game to keep your progress.[/yellow]"
+        )

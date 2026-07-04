@@ -104,6 +104,16 @@ class Character:
         self.defense_buff = 0
         self.is_taunting = False
 
+    def to_dict(self) -> dict:
+        """Snapshot of all stats for save games."""
+        return dict(vars(self))
+
+    @classmethod
+    def from_dict(cls, data: dict) -> "Character":
+        char = cls(data["name"], data["char_class"], data["role"])
+        char.__dict__.update(data)
+        return char
+
     def is_alive(self) -> bool:
         return self.hp > 0
 
@@ -168,6 +178,13 @@ class Route:
         self.treasure = treasure
         self.xp_mult = xp_mult
 
+    def to_dict(self) -> dict:
+        return dict(vars(self))
+
+    @classmethod
+    def from_dict(cls, data: dict) -> "Route":
+        return cls(**data)
+
 
 class GameState:
     def __init__(self):
@@ -185,6 +202,45 @@ class GameState:
         self.combat_active = False
         self.combat_turn = "player"  # "player", "companion", "monster"
         self.combat_log: list[str] = []
+        self.game_over = False
+        self.game_won = False
+
+    def to_save_dict(self) -> dict:
+        """Snapshot of the world for save games.
+
+        Saving is only offered between encounters, so combat fields
+        (active_monster, combat_active, ...) are deliberately not persisted.
+        """
+        return {
+            "player": self.player.to_dict(),
+            "companion": self.companion.to_dict(),
+            "current_level": self.current_level,
+            "gold": self.gold,
+            "inventory": list(self.inventory),
+            "routes": {d: r.to_dict() for d, r in self.routes.items()},
+            "selected_route": (
+                self.selected_route.direction if self.selected_route else None
+            ),
+            "current_room_index": self.current_room_index,
+        }
+
+    def restore_save_dict(self, data: dict) -> None:
+        """Restores a snapshot in place.
+
+        Mutates self rather than returning a new object because the agents
+        and tools all hold references to the `global_game_state` singleton.
+        """
+        self.player = Character.from_dict(data["player"])
+        self.companion = Character.from_dict(data["companion"])
+        self.current_level = data["current_level"]
+        self.gold = data["gold"]
+        self.inventory = list(data["inventory"])
+        self.routes = {d: Route.from_dict(r) for d, r in data["routes"].items()}
+        selected = data.get("selected_route")
+        self.selected_route = self.routes.get(selected) if selected else None
+        self.current_room_index = data["current_room_index"]
+        self.active_monster = None
+        self.combat_active = False
         self.game_over = False
         self.game_won = False
 
