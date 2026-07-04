@@ -1,5 +1,7 @@
+import logging
 import os
 import time
+import warnings
 
 from google.adk.runners import Runner
 from google.adk.sessions import InMemorySessionService
@@ -129,6 +131,13 @@ def run_agent_turn(runner, prompt, session_id, user_id):
 
 
 def main():
+    # Keep ADK's internal chatter off the game screen: the sync session API
+    # logs a "migrate to async" deprecation warning and the function-
+    # declaration builder emits an [EXPERIMENTAL] UserWarning. Neither is
+    # actionable for the player, so silence them for the CLI only.
+    logging.getLogger("google_adk").setLevel(logging.ERROR)
+    warnings.filterwarnings("ignore", message=r".*\[EXPERIMENTAL\].*")
+
     clear_screen()
     show_banner()
 
