@@ -238,6 +238,30 @@ def get_monster_panel():
     )
 
 
+def choose_item() -> str | None:
+    """Numbered pick from the actual inventory. Returns the item or None.
+
+    The old menu hardcoded "Health Potion/Mana Potion" (making treasure like
+    the Elixir of Life unreachable) and required typing the exact item name.
+    """
+    items = list(dict.fromkeys(global_game_state.inventory))
+    if not items:
+        console.print("[yellow]Your inventory is empty.[/yellow]")
+        return None
+    console.print("\n[bold cyan]Inventory:[/bold cyan]")
+    for i, item in enumerate(items, 1):
+        count = global_game_state.inventory.count(item)
+        label = f"{item} (x{count})" if count > 1 else item
+        console.print(f"{i}. {label}")
+    console.print(f"{len(items) + 1}. Cancel")
+    pick = Prompt.ask(
+        "Use which item", choices=[str(n) for n in range(1, len(items) + 2)]
+    )
+    if int(pick) == len(items) + 1:
+        return None
+    return items[int(pick) - 1]
+
+
 def wait_for_player():
     """Pauses until the player presses Enter.
 
@@ -380,10 +404,9 @@ def main():
                 console.print("2. Cast Heal (8 mana)")
                 console.print("3. Cast Shield (5 mana)")
                 console.print("4. Weapon Attack (Staff)")
-                console.print("5. Use Health Potion")
-                console.print("6. Use Mana Potion")
+                console.print("5. Use Item")
                 combat_choice = Prompt.ask(
-                    "Choose action", choices=["1", "2", "3", "4", "5", "6"]
+                    "Choose action", choices=["1", "2", "3", "4", "5"]
                 )
 
                 action_prompt = ""
@@ -400,13 +423,14 @@ def main():
                 elif combat_choice == "4":
                     action_prompt = "I attack with my staff."
                 elif combat_choice == "5":
-                    action_prompt = "I use a Health Potion."
-                elif combat_choice == "6":
-                    action_prompt = "I use a Mana Potion."
+                    item = choose_item()
+                    if item is None:
+                        continue
+                    action_prompt = f"I use a {item}."
             else:  # Fighter
                 console.print("1. Standard Melee Attack")
                 console.print("2. Taunt Monster (protect ally)")
-                console.print("3. Use Health Potion")
+                console.print("3. Use Item")
                 combat_choice = Prompt.ask("Choose action", choices=["1", "2", "3"])
 
                 action_prompt = ""
@@ -416,7 +440,10 @@ def main():
                     global_game_state.player.is_taunting = True
                     action_prompt = "I use Taunt on the monster."
                 elif combat_choice == "3":
-                    action_prompt = "I use a Health Potion."
+                    item = choose_item()
+                    if item is None:
+                        continue
+                    action_prompt = f"I use a {item}."
 
             # Execute player turn through the GM agent
             gm_combat_res = run_agent_turn(
@@ -472,9 +499,12 @@ def main():
             # only offered here, never mid-combat)
             console.print("\n[bold yellow]Exploration Action:[/bold yellow]")
             console.print("1. [bold green]Move Forward[/bold green] (Enter next room)")
-            console.print("2. [bold cyan]Use Potion[/bold cyan]")
-            console.print("3. [bold white]Save & Quit[/bold white]")
-            explore_choice = Prompt.ask("Choose action", choices=["1", "2", "3"])
+            console.print("2. [bold cyan]Use Item[/bold cyan]")
+            console.print(
+                "3. [bold magenta]Act / Talk to the GM[/bold magenta] (free text - e.g. cast Heal, ask about the party)"
+            )
+            console.print("4. [bold white]Save & Quit[/bold white]")
+            explore_choice = Prompt.ask("Choose action", choices=["1", "2", "3", "4"])
 
             if explore_choice == "1":
                 if (
@@ -497,13 +527,27 @@ def main():
                     )
                 show_scene(gm_response)
             elif explore_choice == "2":
-                potion = Prompt.ask(
-                    "Choose potion", choices=["Health Potion", "Mana Potion", "Cancel"]
-                )
-                if potion != "Cancel":
+                item = choose_item()
+                if item is not None:
                     gm_response = run_agent_turn(
                         runner_gm,
-                        f"I use a {potion} during exploration. Call execute_use_item to apply it, and narrate its effect.",
+                        f"I use a {item} during exploration. Call execute_use_item to apply it, and narrate its effect.",
+                        session_id,
+                        user_id,
+                    )
+                    show_scene(gm_response)
+            elif explore_choice == "3":
+                # Free-text turn: lets the player do anything the tools
+                # support outside combat - cast Heal/Shield, take stock,
+                # or simply talk to the GM in character.
+                request = Prompt.ask("\n[bold cyan]You[/bold cyan]")
+                if request.strip():
+                    gm_response = run_agent_turn(
+                        runner_gm,
+                        f"During exploration (no combat) the player says: '{request}'. "
+                        "If this asks for a concrete action (casting Heal or Shield, using an item, checking status), "
+                        "call the matching tool and narrate the result. Do not enter rooms or advance levels unless explicitly asked. "
+                        "Otherwise just respond in character.",
                         session_id,
                         user_id,
                     )

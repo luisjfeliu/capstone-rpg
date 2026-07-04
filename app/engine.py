@@ -170,13 +170,20 @@ class Route:
         monster_types: list[str],
         treasure: str,
         xp_mult: float,
+        treasure_gold: int = 0,
+        treasure_item: str = "",
     ):
         self.direction = direction  # "left", "forward", "right"
         self.length = length  # number of rooms/sections
         self.difficulty = difficulty  # "easy", "medium", "hard"
         self.monster_types = monster_types
-        self.treasure = treasure
+        self.treasure = treasure  # display text only - never parsed
         self.xp_mult = xp_mult
+        # Structured reward fields: awarding used to re-parse the display
+        # text, which put items like "a Elixir of Life" into the inventory
+        # where they could never match use_potion's item names.
+        self.treasure_gold = treasure_gold
+        self.treasure_item = treasure_item
 
     def to_dict(self) -> dict:
         return dict(vars(self))
@@ -315,6 +322,8 @@ class GameState:
                 monster_types=monsters,
                 treasure=treasure_desc,
                 xp_mult=1.0 if diff == "easy" else 1.3 if diff == "medium" else 1.6,
+                treasure_gold=gold_amount,
+                treasure_item=item,
             )
 
     def choose_route(self, direction: str):
@@ -538,20 +547,15 @@ class GameState:
                 msg += f" {self.companion.name} leveled up to {self.companion.level}!"
 
             # If last room of the level was cleared, award level treasure
+            # from the route's structured reward fields
             if (
                 self.selected_route
                 and self.current_room_index >= self.selected_route.length
             ):
-                # Add route rewards
-                treasure_desc = self.selected_route.treasure
-                # Parse gold and items from treasure_desc
-                # (e.g. "80 Gold and a Health Potion")
-                gold_award = int(treasure_desc.split()[0])
-                item_award = " ".join(treasure_desc.split()[3:])
-                self.gold += gold_award
-                if item_award and item_award != "and a":
-                    self.inventory.append(item_award)
-                msg += f"\nPath Complete! You find the level treasure: {treasure_desc}."
+                self.gold += self.selected_route.treasure_gold
+                if self.selected_route.treasure_item:
+                    self.inventory.append(self.selected_route.treasure_item)
+                msg += f"\nPath Complete! You find the level treasure: {self.selected_route.treasure}."
 
             self.active_monster = None
             return True, msg

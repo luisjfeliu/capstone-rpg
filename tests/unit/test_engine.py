@@ -1,4 +1,4 @@
-from app.engine import Character, GameState
+from app.engine import Character, GameState, Monster
 
 
 def test_character_initialization():
@@ -107,3 +107,29 @@ def test_use_item():
     log_mana = state.use_potion(player, "Mana Potion")
     assert "uses a Mana Potion" in log_mana
     assert player.mana > 5
+
+
+def test_route_treasure_awards_clean_item_name_and_gold():
+    # Regression: treasure used to be re-parsed from its display text,
+    # putting "a Elixir of Life" into the inventory (unusable by use_potion).
+    state = GameState()
+    state.select_character("Wizard", "Albus")
+    state.generate_level_routes()
+    state.choose_route("right")  # hard route awards an Elixir of Life
+    route = state.selected_route
+
+    state.current_room_index = route.length  # last room of the path
+    state.active_monster = Monster(
+        "Cave Troll", hp=10, attack=5, xp_reward=20, gold_reward=10
+    )
+    state.combat_active = True
+    state.active_monster.hp = 0  # monster defeated
+
+    is_over, msg = state.check_combat_end()
+    assert is_over
+    assert "Path Complete!" in msg
+    assert "Elixir of Life" in state.inventory
+    assert not any(item.startswith("a ") for item in state.inventory)
+    assert state.gold == 50 + 10 + route.treasure_gold
+    # the item must be consumable by name
+    assert "fully restoring" in state.use_potion(state.player, "Elixir of Life")
