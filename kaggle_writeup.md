@@ -73,6 +73,4 @@ The GM agent is deployed to **Vertex AI Agent Runtime** with `agents-cli deploy`
 - **Measured quality**: LLM-judge score improved 4.125 → 4.875/5 through the eval loop, with the judge's feedback directly driving instruction fixes.
 - **Four course concepts in production**: multi-agent ADK system, MCP server, deployability (Agent Runtime), and agents-cli skills across scaffold/lint/eval/deploy.
 
-**Links:** public repository (GitHub) and demo video are attached to this writeup.
-
-*(Word count: ~1,100 — within the 2,500 limit.)*
+**Links:** public repository — https://github.com/luisjfeliu/capstone-rpg — and demo video are attached to this writeup.
