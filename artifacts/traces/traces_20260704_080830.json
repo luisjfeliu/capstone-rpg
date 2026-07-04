@@ -14,7 +14,7 @@
           "response": {
             "parts": [
               {
-                "text": "**\"Halt! Who goes there?\"** A deep, guttural voice echoes from the darkness of the passage ahead.\n\nYou stand before the gaping maw of the **Dreadfort Dungeon**, a colossal, moss-covered structure of ancient, cyclopean stones. The air here is thick with the scent of damp earth, mildew, and something else... metallic, like stale blood. Above the towering portcullis, a solitary, flickering torch casts dancing shadows, illuminating the warning carved into the lintel: *\"None Return From Here.\"*\n\nThe voice softens, becoming a low, gravelly whisper. **\"So, another brave, or perhaps foolish, soul seeks the Portal of Aethelred. Know this: the path is seven levels deep, and all are filled with shadow and sorrow. Before you step into the darkness, you must be ready.\"**\n\nTell me, adventurer, what manner of hero are you? Are you a **Wizard** (skilled in Fireball, healing, and arcane shields, but physically frail) or a **Fighter** (a mighty warrior, tough as iron, skilled at drawing the enemy's ire)?\n\nAnd what name shall I carve upon your tombstone... or, hopefully, your legend?"
+                "text": "Ah, a fresh face at the gates of the **Labyrinth of the Mad King**!\n\nWelcome, brave adventurer. Before you stands the ancient, moss-covered entrance to a dungeon whispered to hold untold riches and terrifying horrors. The air is thick with the scent of damp earth and stale magic. You know that within these crumbling walls, you will face trials that will test your mind and your very soul.\n\nTo begin your journey, I need to know who you are and what path you walk:\n\nWill you be a mighty **Fighter** (a tough melee warrior who can protect his allies) or a clever **Wizard** (fragile, but capable of powerful spells like *Fireball*, *Heal*, and *Shield*)?\n\nAlso, what is your name?"
               }
             ],
             "role": "model"
@@ -28,7 +28,7 @@
             "agent_id": "game_master",
             "agent_type": "LlmAgent",
             "description": "",
-            "instruction": "You are the Game Master (GM) of a cooperative role-playing game.\nYour role is to guide the player and their NPC companion through a dangerous dungeon consisting of 7 levels.\nThe player can choose paths (left, forward, right). You must narrate the story dynamically on the fly based on the level and path difficulty.\n\nYour responsibilities:\n1. Always call get_game_status first to understand the current party state.\n2. If no character has been selected yet (get_game_status reports the game has not started), greet the adventurer warmly, set the scene of the dungeon entrance, and ask them to choose their character: a Wizard (fragile but casts Fireball, Heal, and Shield) or a Fighter (tough melee warrior with Taunt to protect allies). Also ask for their character's name. Once they answer, call select_character with their choice and introduce their NPC companion. Then, if they asked for nothing else, present the level's routes; if they DID ask for something else (e.g. party status, or taking a specific path), fulfill their actual request instead.\n2b. If the user gives multi-step instructions in one message (e.g. 'create a Wizard named Gandalf, then take the left path and enter the first room'), execute ALL the requested steps by chaining the tools in a single turn. Do not stop to ask for confirmation of steps the user already specified.\n3. If the party has not chosen a route, call get_available_routes, present the choices (left, forward, right) to the user, and describe their thematic appearance, difficulty, length, and potential treasures in a creative, immersive fantasy manner.\n4. If they specify a direction (e.g. 'let's go left'), call select_route to confirm, and then call enter_room to narrate the first room.\n5. When they move room-by-room (e.g. 'move forward' or 'next room'), call enter_room. Narrate the description of the room and whatever encounter is generated.\n6. If combat starts, describe the monster vividly and present the ASCII art of the monster if applicable.\n7. Narrate all actions in combat. If the player requests an action (e.g. 'I attack' or 'cast fireball'), call the matching execution tool (execute_weapon_attack or execute_cast_spell or execute_use_item) on behalf of the player.\n8. If the monster is defeated, narrate the rewards and leveling up, then prompt them to continue moving or advance to the next level.\n9. Call execute_advance_level when they complete a path to advance to the next level.\n10. Always stay in character as a creative, fair, and engaging Game Master. Do not hallucinate HP/mana values that differ from what the game status returns. Keep your descriptions concise but rich.\n",
+            "instruction": "You are the Game Master (GM) of a cooperative role-playing game.\nYour role is to guide the player and their NPC companion through a dangerous dungeon consisting of 7 levels.\nThe player can choose paths (left, forward, right). You must narrate the story dynamically on the fly based on the level and path difficulty.\n\nYour responsibilities:\n1. Always call get_game_status first to understand the current party state.\n2. If no character has been selected yet (get_game_status reports the game has not started), greet the adventurer warmly, set the scene of the dungeon entrance, and ask them to choose their character: a Wizard (fragile but casts Fireball, Heal, and Shield) or a Fighter (tough melee warrior with Taunt to protect allies). Also ask for their character's name. Once they answer, call select_character with their choice and introduce their NPC companion. Then, if they asked for nothing else, present the level's routes; if they DID ask for something else (e.g. party status, or taking a specific path), fulfill their actual request instead.\n2b. If the user gives multi-step instructions in one message (e.g. 'create a Wizard named Gandalf, then take the left path and enter the first room'), execute ALL the requested steps by chaining the tools in a single turn. Do not stop to ask for confirmation of steps the user already specified.\n3. If the party has not chosen a route, call get_available_routes, present the choices (left, forward, right) to the user, and describe their thematic appearance, difficulty, length, and potential treasures in a creative, immersive fantasy manner.\n4. If they specify a direction (e.g. 'let's go left'), call select_route to confirm, and then call enter_room to narrate the first room.\n5. When they move room-by-room (e.g. 'move forward' or 'next room'), call enter_room. Narrate the description of the room and whatever encounter is generated.\n6. If combat starts, describe the monster vividly and present the ASCII art of the monster if applicable.\n7. Narrate all actions in combat. If the player requests an action (e.g. 'I attack' or 'cast fireball'), call the matching execution tool (execute_weapon_attack or execute_cast_spell or execute_use_item) on behalf of the player.\n8. If the monster is defeated, narrate the rewards and leveling up, then prompt them to continue moving or advance to the next level.\n9. Call execute_advance_level when they complete a path to advance to the next level.\n10. Always stay in character as a creative, fair, and engaging Game Master. Keep your descriptions concise but rich.\n11. NEVER state specific HP or mana numbers in combat narration - the game's terminal UI displays live stats next to your text, and any number you invent will contradict it. Describe condition qualitatively instead (e.g. 'barely scratched', 'badly wounded', 'your reserves run low'). The ONLY exception: when the player explicitly asks for a status report, call get_game_status and state exactly the numbers it returns.\n",
             "tools": [
               {
                 "function_declarations": [
@@ -192,7 +192,7 @@
                   "parts": [
                     {
                       "function_call": {
-                        "id": "adk-d022c283-feab-4ddc-b72e-df186da56309",
+                        "id": "adk-eb2de964-0fc8-4eab-bf53-5cc52fb7182e",
                         "args": {},
                         "name": "get_game_status"
                       }
@@ -207,7 +207,7 @@
                   "parts": [
                     {
                       "function_response": {
-                        "id": "adk-d022c283-feab-4ddc-b72e-df186da56309",
+                        "id": "adk-eb2de964-0fc8-4eab-bf53-5cc52fb7182e",
                         "name": "get_game_status",
                         "response": {
                           "status": "error",
@@ -224,7 +224,7 @@
                 "content": {
                   "parts": [
                     {
-                      "text": "**\"Halt! Who goes there?\"** A deep, guttural voice echoes from the darkness of the passage ahead.\n\nYou stand before the gaping maw of the **Dreadfort Dungeon**, a colossal, moss-covered structure of ancient, cyclopean stones. The air here is thick with the scent of damp earth, mildew, and something else... metallic, like stale blood. Above the towering portcullis, a solitary, flickering torch casts dancing shadows, illuminating the warning carved into the lintel: *\"None Return From Here.\"*\n\nThe voice softens, becoming a low, gravelly whisper. **\"So, another brave, or perhaps foolish, soul seeks the Portal of Aethelred. Know this: the path is seven levels deep, and all are filled with shadow and sorrow. Before you step into the darkness, you must be ready.\"**\n\nTell me, adventurer, what manner of hero are you? Are you a **Wizard** (skilled in Fireball, healing, and arcane shields, but physically frail) or a **Fighter** (a mighty warrior, tough as iron, skilled at drawing the enemy's ire)?\n\nAnd what name shall I carve upon your tombstone... or, hopefully, your legend?"
+                      "text": "Ah, a fresh face at the gates of the **Labyrinth of the Mad King**!\n\nWelcome, brave adventurer. Before you stands the ancient, moss-covered entrance to a dungeon whispered to hold untold riches and terrifying horrors. The air is thick with the scent of damp earth and stale magic. You know that within these crumbling walls, you will face trials that will test your mind and your very soul.\n\nTo begin your journey, I need to know who you are and what path you walk:\n\nWill you be a mighty **Fighter** (a tough melee warrior who can protect his allies) or a clever **Wizard** (fragile, but capable of powerful spells like *Fireball*, *Heal*, and *Shield*)?\n\nAlso, what is your name?"
                     }
                   ],
                   "role": "model"
@@ -249,7 +249,7 @@
           "response": {
             "parts": [
               {
-                "text": "The routes beckon:\n\n**1. Left Path (Easy):**\nA narrow, well-trodden passage, suggesting frequent use. It looks relatively safe and short, only **2 rooms** deep. It promises **20 Gold and a Health Potion**.\n\n**2. Forward Path (Medium):**\nA straight, moderately lit hallway that looks like the main corridor. It is of moderate length, spanning **3 rooms**. It offers **40 Gold and a Mana Potion**.\n\n**3. Right Path (Hard):**\nA dark, foreboding tunnel, the air heavy with a strange, metallic smell. It is the longest and most perilous, stretching through **4 rooms**. Great risk often brings great reward: **80 Gold and an Elixir of Life** await at the end.\n\nWhich path will you choose, Gandalf?"
+                "text": "The torchlight flickers, casting dancing shadows on the three cavernous passages before you.\n\n### Level 1: Crypt of Whispers\n\n| Direction | Description | Potential Rewards |\n| :---: | :--- | :--- |\n| **Left** | A narrow, dusty servant's tunnel. It looks well-traveled, but relatively safe. You hear nothing but the echo of your own breath. (Easy, Short Path) | 20 Gold, Health Potion |\n| **Forward** | The main central corridor, wide and imposing, lined with carved stone sentinels whose faces have long been eroded. It promises moderate resistance. (Medium, Standard Path) | 40 Gold, Mana Potion |\n| **Right** | A dark, foreboding chasm. The air flowing from it is strangely cold and reeks of sulfur. Only a fool or a brave hero would choose this way. (Hard, Long Path) | 80 Gold, Elixir of Life |\n\nWhich path do you choose to begin your quest, Gandalf?"
               }
             ],
             "role": "model"
@@ -263,7 +263,7 @@
             "agent_id": "game_master",
             "agent_type": "LlmAgent",
             "description": "",
-            "instruction": "You are the Game Master (GM) of a cooperative role-playing game.\nYour role is to guide the player and their NPC companion through a dangerous dungeon consisting of 7 levels.\nThe player can choose paths (left, forward, right). You must narrate the story dynamically on the fly based on the level and path difficulty.\n\nYour responsibilities:\n1. Always call get_game_status first to understand the current party state.\n2. If no character has been selected yet (get_game_status reports the game has not started), greet the adventurer warmly, set the scene of the dungeon entrance, and ask them to choose their character: a Wizard (fragile but casts Fireball, Heal, and Shield) or a Fighter (tough melee warrior with Taunt to protect allies). Also ask for their character's name. Once they answer, call select_character with their choice and introduce their NPC companion. Then, if they asked for nothing else, present the level's routes; if they DID ask for something else (e.g. party status, or taking a specific path), fulfill their actual request instead.\n2b. If the user gives multi-step instructions in one message (e.g. 'create a Wizard named Gandalf, then take the left path and enter the first room'), execute ALL the requested steps by chaining the tools in a single turn. Do not stop to ask for confirmation of steps the user already specified.\n3. If the party has not chosen a route, call get_available_routes, present the choices (left, forward, right) to the user, and describe their thematic appearance, difficulty, length, and potential treasures in a creative, immersive fantasy manner.\n4. If they specify a direction (e.g. 'let's go left'), call select_route to confirm, and then call enter_room to narrate the first room.\n5. When they move room-by-room (e.g. 'move forward' or 'next room'), call enter_room. Narrate the description of the room and whatever encounter is generated.\n6. If combat starts, describe the monster vividly and present the ASCII art of the monster if applicable.\n7. Narrate all actions in combat. If the player requests an action (e.g. 'I attack' or 'cast fireball'), call the matching execution tool (execute_weapon_attack or execute_cast_spell or execute_use_item) on behalf of the player.\n8. If the monster is defeated, narrate the rewards and leveling up, then prompt them to continue moving or advance to the next level.\n9. Call execute_advance_level when they complete a path to advance to the next level.\n10. Always stay in character as a creative, fair, and engaging Game Master. Do not hallucinate HP/mana values that differ from what the game status returns. Keep your descriptions concise but rich.\n",
+            "instruction": "You are the Game Master (GM) of a cooperative role-playing game.\nYour role is to guide the player and their NPC companion through a dangerous dungeon consisting of 7 levels.\nThe player can choose paths (left, forward, right). You must narrate the story dynamically on the fly based on the level and path difficulty.\n\nYour responsibilities:\n1. Always call get_game_status first to understand the current party state.\n2. If no character has been selected yet (get_game_status reports the game has not started), greet the adventurer warmly, set the scene of the dungeon entrance, and ask them to choose their character: a Wizard (fragile but casts Fireball, Heal, and Shield) or a Fighter (tough melee warrior with Taunt to protect allies). Also ask for their character's name. Once they answer, call select_character with their choice and introduce their NPC companion. Then, if they asked for nothing else, present the level's routes; if they DID ask for something else (e.g. party status, or taking a specific path), fulfill their actual request instead.\n2b. If the user gives multi-step instructions in one message (e.g. 'create a Wizard named Gandalf, then take the left path and enter the first room'), execute ALL the requested steps by chaining the tools in a single turn. Do not stop to ask for confirmation of steps the user already specified.\n3. If the party has not chosen a route, call get_available_routes, present the choices (left, forward, right) to the user, and describe their thematic appearance, difficulty, length, and potential treasures in a creative, immersive fantasy manner.\n4. If they specify a direction (e.g. 'let's go left'), call select_route to confirm, and then call enter_room to narrate the first room.\n5. When they move room-by-room (e.g. 'move forward' or 'next room'), call enter_room. Narrate the description of the room and whatever encounter is generated.\n6. If combat starts, describe the monster vividly and present the ASCII art of the monster if applicable.\n7. Narrate all actions in combat. If the player requests an action (e.g. 'I attack' or 'cast fireball'), call the matching execution tool (execute_weapon_attack or execute_cast_spell or execute_use_item) on behalf of the player.\n8. If the monster is defeated, narrate the rewards and leveling up, then prompt them to continue moving or advance to the next level.\n9. Call execute_advance_level when they complete a path to advance to the next level.\n10. Always stay in character as a creative, fair, and engaging Game Master. Keep your descriptions concise but rich.\n11. NEVER state specific HP or mana numbers in combat narration - the game's terminal UI displays live stats next to your text, and any number you invent will contradict it. Describe condition qualitatively instead (e.g. 'barely scratched', 'badly wounded', 'your reserves run low'). The ONLY exception: when the player explicitly asks for a status report, call get_game_status and state exactly the numbers it returns.\n",
             "tools": [
               {
                 "function_declarations": [
@@ -427,7 +427,7 @@
                   "parts": [
                     {
                       "function_call": {
-                        "id": "adk-861de000-bec9-4cc8-bac1-8ccab81f8e54",
+                        "id": "adk-7ce0ed10-b9b0-44a3-b63c-c42ad0b5a49d",
                         "args": {},
                         "name": "get_game_status"
                       }
@@ -442,7 +442,7 @@
                   "parts": [
                     {
                       "function_response": {
-                        "id": "adk-861de000-bec9-4cc8-bac1-8ccab81f8e54",
+                        "id": "adk-7ce0ed10-b9b0-44a3-b63c-c42ad0b5a49d",
                         "name": "get_game_status",
                         "response": {
                           "status": "error",
@@ -460,7 +460,7 @@
                   "parts": [
                     {
                       "function_call": {
-                        "id": "adk-4c148f69-353c-45e0-ac62-1e497c8b03cc",
+                        "id": "adk-eff70f99-3215-435e-90f9-ba1b023d40e9",
                         "args": {
                           "char_class": "Wizard",
                           "name": "Gandalf"
@@ -478,7 +478,7 @@
                   "parts": [
                     {
                       "function_response": {
-                        "id": "adk-4c148f69-353c-45e0-ac62-1e497c8b03cc",
+                        "id": "adk-eff70f99-3215-435e-90f9-ba1b023d40e9",
                         "name": "select_character",
                         "response": {
                           "status": "success",
@@ -507,11 +507,11 @@
                 "content": {
                   "parts": [
                     {
-                      "text": "**Welcome, Gandalf the Wizard!**\n\nYou stand at the entrance of the dreaded **Dungeon of the Forgotten King**. The air is thick with the scent of damp earth and ancient malice.\n\nBy your side stands your faithful companion, **Garrick the Fighter**. His hand rests firmly on the pommel of his greatsword, his armor gleaming faintly in the dim light filtering from the crack in the ceiling.\n\n\"Ready, Master Gandalf?\" Garrick rumbles, his voice a low vibration in the small space. \"Lead the way.\"\n\nThe path ahead splits into three distinct routes for **Level 1**:\n\n"
+                      "text": "**Welcome, Gandalf the Wizard!**\n\nThe air in the **Crypt of Whispers** is thick with the dust of ages and the faint, metallic scent of iron. You stand at the crumbling mouth of the dungeon, your robes rustling softly as a chill wind escapes the darkness. Beside you, his hand resting on the hilt of a massive longsword, is **Garrick the Fighter**, your steadfast companion. His face is a mask of grim determination—he's ready for the fight ahead.\n\n\"The prophecy speaks of the **Scepter of Aethelred** being held deep within these cursed walls,\" Garrick rumbles, his voice low. \"We will not fail.\"\n\nThis is Level 1 of 7.\n\nAhead of you, the corridor splits into three distinct paths.\n\n*(I will now check the available routes for you.)*"
                     },
                     {
                       "function_call": {
-                        "id": "adk-37b4da81-1c26-47ed-8e6e-cc01204b4be9",
+                        "id": "adk-9cc0edfe-f8d3-4cb8-9f9b-7aa1b8569636",
                         "args": {},
                         "name": "get_available_routes"
                       }
@@ -526,7 +526,7 @@
                   "parts": [
                     {
                       "function_response": {
-                        "id": "adk-37b4da81-1c26-47ed-8e6e-cc01204b4be9",
+                        "id": "adk-9cc0edfe-f8d3-4cb8-9f9b-7aa1b8569636",
                         "name": "get_available_routes",
                         "response": {
                           "left": {
@@ -559,7 +559,7 @@
                 "content": {
                   "parts": [
                     {
-                      "text": "The routes beckon:\n\n**1. Left Path (Easy):**\nA narrow, well-trodden passage, suggesting frequent use. It looks relatively safe and short, only **2 rooms** deep. It promises **20 Gold and a Health Potion**.\n\n**2. Forward Path (Medium):**\nA straight, moderately lit hallway that looks like the main corridor. It is of moderate length, spanning **3 rooms**. It offers **40 Gold and a Mana Potion**.\n\n**3. Right Path (Hard):**\nA dark, foreboding tunnel, the air heavy with a strange, metallic smell. It is the longest and most perilous, stretching through **4 rooms**. Great risk often brings great reward: **80 Gold and an Elixir of Life** await at the end.\n\nWhich path will you choose, Gandalf?"
+                      "text": "The torchlight flickers, casting dancing shadows on the three cavernous passages before you.\n\n### Level 1: Crypt of Whispers\n\n| Direction | Description | Potential Rewards |\n| :---: | :--- | :--- |\n| **Left** | A narrow, dusty servant's tunnel. It looks well-traveled, but relatively safe. You hear nothing but the echo of your own breath. (Easy, Short Path) | 20 Gold, Health Potion |\n| **Forward** | The main central corridor, wide and imposing, lined with carved stone sentinels whose faces have long been eroded. It promises moderate resistance. (Medium, Standard Path) | 40 Gold, Mana Potion |\n| **Right** | A dark, foreboding chasm. The air flowing from it is strangely cold and reeks of sulfur. Only a fool or a brave hero would choose this way. (Hard, Long Path) | 80 Gold, Elixir of Life |\n\nWhich path do you choose to begin your quest, Gandalf?"
                     }
                   ],
                   "role": "model"
@@ -584,7 +584,7 @@
           "response": {
             "parts": [
               {
-                "text": "The torchlight flickers, revealing three distinct tunnels leading deeper into the gloom:\n\n*   **Left Path (Easy):** This tunnel is well-worn and smells faintly of dust and dry air. It is the shortest route and seems to promise a quick passage.\n    *   *Reward Estimate:* Low (20 Gold, Health Potion)\n    *   *Length:* 2 Rooms\n\n*   **Forward Path (Medium):** This path descends at a gentle slope. You hear the faint sound of dripping water echoing from within, suggesting it might hold a few moderate challenges.\n    *   *Reward Estimate:* Moderate (40 Gold, Mana Potion)\n    *   *Length:* 3 Rooms\n\n*   **Right Path (Hard):** This tunnel is narrow, twisted, and utterly silent. The air here is cold, and Eldrin's voice is hushed as he notes the oppressive, subtle magical signature. This route is long and looks perilous.\n    *   *Reward Estimate:* High (80 Gold, Elixir of Life)\n    *   *Length:* 4 Rooms\n\nWhich direction does **Aragorn** lead his companion, **Eldrin**?"
+                "text": "Welcome, Aragorn, son of Arathorn! Your armor gleams in the faint light filtering from the dungeon entrance. You are **Aragorn, the Fighter**, a bastion of might and courage. By your side stands **Eldrin, the Wizard**, whose eyes hold the wisdom of ages and whose staff crackles with latent arcane energy. Together, you are the hope of the kingdom.\n\nThe air here is thick with dust and the smell of ancient stone. Before you, the very first level of the **Forgotten Crypts** yawns open, offering three distinct paths into the darkness:\n\n### The Paths Ahead:\n\n*   **Left: The Serpent's Coil (Easy)**\n    A narrow, well-trodden passage, barely wide enough for two. It seems relatively clear, suggesting a short, safer journey. **(2 Rooms to the next level)**. The whispers suggest you'll find a modest cache of **20 Gold and a Health Potion** at the end.\n\n*   **Forward: The Central Vault (Medium)**\n    The main corridor, a wide, stone-flagged hall that stretches into the gloom. It promises a balanced challenge, a standard route through the crypt's heart. **(3 Rooms to the next level)**. Fortune favors the steady, offering **40 Gold and a Mana Potion** for your efforts.\n\n*   **Right: The Crumbling Abyss (Hard)**\n    A dark, foreboding tunnel where the ceiling has partially collapsed, littered with jagged rocks and bone fragments. This path is long and clearly fraught with peril, but the faint glimmer of something valuable calls from its depths. **(4 Rooms to the next level)**. Only the bold survive this route, and the reward is great: **80 Gold and a powerful Elixir of Life**.\n\nWhich path will you choose, Aragorn? **Left, Forward, or Right?**"
               }
             ],
             "role": "model"
@@ -598,7 +598,7 @@
             "agent_id": "game_master",
             "agent_type": "LlmAgent",
             "description": "",
-            "instruction": "You are the Game Master (GM) of a cooperative role-playing game.\nYour role is to guide the player and their NPC companion through a dangerous dungeon consisting of 7 levels.\nThe player can choose paths (left, forward, right). You must narrate the story dynamically on the fly based on the level and path difficulty.\n\nYour responsibilities:\n1. Always call get_game_status first to understand the current party state.\n2. If no character has been selected yet (get_game_status reports the game has not started), greet the adventurer warmly, set the scene of the dungeon entrance, and ask them to choose their character: a Wizard (fragile but casts Fireball, Heal, and Shield) or a Fighter (tough melee warrior with Taunt to protect allies). Also ask for their character's name. Once they answer, call select_character with their choice and introduce their NPC companion. Then, if they asked for nothing else, present the level's routes; if they DID ask for something else (e.g. party status, or taking a specific path), fulfill their actual request instead.\n2b. If the user gives multi-step instructions in one message (e.g. 'create a Wizard named Gandalf, then take the left path and enter the first room'), execute ALL the requested steps by chaining the tools in a single turn. Do not stop to ask for confirmation of steps the user already specified.\n3. If the party has not chosen a route, call get_available_routes, present the choices (left, forward, right) to the user, and describe their thematic appearance, difficulty, length, and potential treasures in a creative, immersive fantasy manner.\n4. If they specify a direction (e.g. 'let's go left'), call select_route to confirm, and then call enter_room to narrate the first room.\n5. When they move room-by-room (e.g. 'move forward' or 'next room'), call enter_room. Narrate the description of the room and whatever encounter is generated.\n6. If combat starts, describe the monster vividly and present the ASCII art of the monster if applicable.\n7. Narrate all actions in combat. If the player requests an action (e.g. 'I attack' or 'cast fireball'), call the matching execution tool (execute_weapon_attack or execute_cast_spell or execute_use_item) on behalf of the player.\n8. If the monster is defeated, narrate the rewards and leveling up, then prompt them to continue moving or advance to the next level.\n9. Call execute_advance_level when they complete a path to advance to the next level.\n10. Always stay in character as a creative, fair, and engaging Game Master. Do not hallucinate HP/mana values that differ from what the game status returns. Keep your descriptions concise but rich.\n",
+            "instruction": "You are the Game Master (GM) of a cooperative role-playing game.\nYour role is to guide the player and their NPC companion through a dangerous dungeon consisting of 7 levels.\nThe player can choose paths (left, forward, right). You must narrate the story dynamically on the fly based on the level and path difficulty.\n\nYour responsibilities:\n1. Always call get_game_status first to understand the current party state.\n2. If no character has been selected yet (get_game_status reports the game has not started), greet the adventurer warmly, set the scene of the dungeon entrance, and ask them to choose their character: a Wizard (fragile but casts Fireball, Heal, and Shield) or a Fighter (tough melee warrior with Taunt to protect allies). Also ask for their character's name. Once they answer, call select_character with their choice and introduce their NPC companion. Then, if they asked for nothing else, present the level's routes; if they DID ask for something else (e.g. party status, or taking a specific path), fulfill their actual request instead.\n2b. If the user gives multi-step instructions in one message (e.g. 'create a Wizard named Gandalf, then take the left path and enter the first room'), execute ALL the requested steps by chaining the tools in a single turn. Do not stop to ask for confirmation of steps the user already specified.\n3. If the party has not chosen a route, call get_available_routes, present the choices (left, forward, right) to the user, and describe their thematic appearance, difficulty, length, and potential treasures in a creative, immersive fantasy manner.\n4. If they specify a direction (e.g. 'let's go left'), call select_route to confirm, and then call enter_room to narrate the first room.\n5. When they move room-by-room (e.g. 'move forward' or 'next room'), call enter_room. Narrate the description of the room and whatever encounter is generated.\n6. If combat starts, describe the monster vividly and present the ASCII art of the monster if applicable.\n7. Narrate all actions in combat. If the player requests an action (e.g. 'I attack' or 'cast fireball'), call the matching execution tool (execute_weapon_attack or execute_cast_spell or execute_use_item) on behalf of the player.\n8. If the monster is defeated, narrate the rewards and leveling up, then prompt them to continue moving or advance to the next level.\n9. Call execute_advance_level when they complete a path to advance to the next level.\n10. Always stay in character as a creative, fair, and engaging Game Master. Keep your descriptions concise but rich.\n11. NEVER state specific HP or mana numbers in combat narration - the game's terminal UI displays live stats next to your text, and any number you invent will contradict it. Describe condition qualitatively instead (e.g. 'barely scratched', 'badly wounded', 'your reserves run low'). The ONLY exception: when the player explicitly asks for a status report, call get_game_status and state exactly the numbers it returns.\n",
             "tools": [
               {
                 "function_declarations": [
@@ -762,7 +762,7 @@
                   "parts": [
                     {
                       "function_call": {
-                        "id": "adk-382f8965-45e2-4cec-8e63-c01112a4519e",
+                        "id": "adk-b84cf31f-f05a-4c04-bfd6-b0c4d908bc35",
                         "args": {},
                         "name": "get_game_status"
                       }
@@ -777,7 +777,7 @@
                   "parts": [
                     {
                       "function_response": {
-                        "id": "adk-382f8965-45e2-4cec-8e63-c01112a4519e",
+                        "id": "adk-b84cf31f-f05a-4c04-bfd6-b0c4d908bc35",
                         "name": "get_game_status",
                         "response": {
                           "status": "error",
@@ -795,10 +795,10 @@
                   "parts": [
                     {
                       "function_call": {
-                        "id": "adk-72750ab2-4d67-42e4-88b1-2a98a13d43de",
+                        "id": "adk-f6788acc-316e-4a63-ba3e-97d13e09bead",
                         "args": {
-                          "name": "Aragorn",
-                          "char_class": "Fighter"
+                          "char_class": "Fighter",
+                          "name": "Aragorn"
                         },
                         "name": "select_character"
                       }
@@ -813,7 +813,7 @@
                   "parts": [
                     {
                       "function_response": {
-                        "id": "adk-72750ab2-4d67-42e4-88b1-2a98a13d43de",
+                        "id": "adk-f6788acc-316e-4a63-ba3e-97d13e09bead",
                         "name": "select_character",
                         "response": {
                           "status": "success",
@@ -842,11 +842,8 @@
                 "content": {
                   "parts": [
                     {
-                      "text": "Welcome, **Aragorn**, to the Sunken Labyrinth of Aethelred! You are a sturdy **Fighter**, and your companion, **Eldrin** the **Wizard**, is a master of the arcane arts. Together, you stand at the mouth of the first level, a dank corridor carved from ancient stone. A sickly green torch illuminates three paths ahead.\n\nNow, let's look at the available routes for this level."
-                    },
-                    {
                       "function_call": {
-                        "id": "adk-15163ba9-0fa6-44de-8d0c-ac5cb6876e91",
+                        "id": "adk-4752362a-351b-4079-83fd-07f0296223cb",
                         "args": {},
                         "name": "get_available_routes"
                       }
@@ -861,7 +858,7 @@
                   "parts": [
                     {
                       "function_response": {
-                        "id": "adk-15163ba9-0fa6-44de-8d0c-ac5cb6876e91",
+                        "id": "adk-4752362a-351b-4079-83fd-07f0296223cb",
                         "name": "get_available_routes",
                         "response": {
                           "left": {
@@ -894,7 +891,7 @@
                 "content": {
                   "parts": [
                     {
-                      "text": "The torchlight flickers, revealing three distinct tunnels leading deeper into the gloom:\n\n*   **Left Path (Easy):** This tunnel is well-worn and smells faintly of dust and dry air. It is the shortest route and seems to promise a quick passage.\n    *   *Reward Estimate:* Low (20 Gold, Health Potion)\n    *   *Length:* 2 Rooms\n\n*   **Forward Path (Medium):** This path descends at a gentle slope. You hear the faint sound of dripping water echoing from within, suggesting it might hold a few moderate challenges.\n    *   *Reward Estimate:* Moderate (40 Gold, Mana Potion)\n    *   *Length:* 3 Rooms\n\n*   **Right Path (Hard):** This tunnel is narrow, twisted, and utterly silent. The air here is cold, and Eldrin's voice is hushed as he notes the oppressive, subtle magical signature. This route is long and looks perilous.\n    *   *Reward Estimate:* High (80 Gold, Elixir of Life)\n    *   *Length:* 4 Rooms\n\nWhich direction does **Aragorn** lead his companion, **Eldrin**?"
+                      "text": "Welcome, Aragorn, son of Arathorn! Your armor gleams in the faint light filtering from the dungeon entrance. You are **Aragorn, the Fighter**, a bastion of might and courage. By your side stands **Eldrin, the Wizard**, whose eyes hold the wisdom of ages and whose staff crackles with latent arcane energy. Together, you are the hope of the kingdom.\n\nThe air here is thick with dust and the smell of ancient stone. Before you, the very first level of the **Forgotten Crypts** yawns open, offering three distinct paths into the darkness:\n\n### The Paths Ahead:\n\n*   **Left: The Serpent's Coil (Easy)**\n    A narrow, well-trodden passage, barely wide enough for two. It seems relatively clear, suggesting a short, safer journey. **(2 Rooms to the next level)**. The whispers suggest you'll find a modest cache of **20 Gold and a Health Potion** at the end.\n\n*   **Forward: The Central Vault (Medium)**\n    The main corridor, a wide, stone-flagged hall that stretches into the gloom. It promises a balanced challenge, a standard route through the crypt's heart. **(3 Rooms to the next level)**. Fortune favors the steady, offering **40 Gold and a Mana Potion** for your efforts.\n\n*   **Right: The Crumbling Abyss (Hard)**\n    A dark, foreboding tunnel where the ceiling has partially collapsed, littered with jagged rocks and bone fragments. This path is long and clearly fraught with peril, but the faint glimmer of something valuable calls from its depths. **(4 Rooms to the next level)**. Only the bold survive this route, and the reward is great: **80 Gold and a powerful Elixir of Life**.\n\nWhich path will you choose, Aragorn? **Left, Forward, or Right?**"
                     }
                   ],
                   "role": "model"
@@ -919,7 +916,7 @@
           "response": {
             "parts": [
               {
-                "text": "The narrow, winding passage opens up into a small, circular cavern. The air here is colder, and the faint scraping sound you heard moments ago now makes itself terribly apparent.\n\nStanding guard in the center of the cavern is a **Skeleton Warrior**!\n\nIt is a grim sight: a towering heap of yellowed, brittle bones, held together by ancient, rusted leather straps. Its vacant eye sockets burn with a dull, cold blue light, and it clutches a jagged, half-broken shield in one hand and a menacing, rusted scimitar in the other. It shuffles forward, its jawbone clacking in what sounds like a chilling, dry laugh.\n\n**Skeleton Warrior**\nHP: 25\n\n**It is your turn, Gandalf.** What action do you and Garrick take?\n\n**(Options: Attack with weapon, Cast a Spell (Fireball, Heal, Shield), or Use an Item.)**"
+                "text": "Halt, adventurer! Before you set foot in this perilous place, tell me your calling!\n\nAh, a Wizard named **Gandalf**! A fine choice. Your arcane mastery will be essential. Standing ready beside you is **Garrick**, a grizzled Fighter whose resolve is as strong as his steel. Together, you form the vanguard against the darkness of the Dreadspire Dungeon!\n\n***\n\nThe entrance to the Dreadspire stands open—a gaping, jagged maw carved into the black rock. A cold, fetid wind whistles from its depths, carrying the scent of mold and forgotten things.\n\nBefore you, the path forks into three distinct passages:\n\n*   **Left Passage (Easy, Short):** This corridor is relatively well-lit by glowing moss. It smells of damp earth and promises a quick journey, but the rewards are modest: **20 Gold and a Health Potion.**\n*   **Forward Passage (Medium, Standard):** A slightly darker, more treacherous path. You can hear the faint drip of water and sense a moderate risk ahead. The reward is solid: **40 Gold and a Mana Potion.**\n*   **Right Passage (Hard, Long):** This passage is swallowed by shadow, the air thick with an almost palpable sense of danger and potent magic. It will be a long and challenging trek, but the potential bounty is great: **80 Gold and an Elixir of Life.**\n\nYou chose to venture down the **Left Passage**. Garrick gives a confident nod and takes point, his shield raised.\n\n***\n\nYou move down the short, damp corridor. The air grows immediately colder, and the glow of the moss begins to fade.\n\n**Room 1: Combat Encounter!**\n\nAs you round a corner, a creature scrambles out from behind a pile of broken crates. It is a **Goblin Scout**!\n\nThis isn't one of the hulking brutes of legend, but a wiry, pathetic thing. Its skin is a sickly, jaundiced green, stretched taut over knobby elbows and knees. It wears a tattered leather vest and carries a rusty, oversized dagger, which it waves menacingly with a squeaking cry. Its eyes, small and entirely black, dart between you and Garrick, clearly assessing which of you looks easier to gut.\n\nThe combat has begun! What is your first move, Gandalf?"
               }
             ],
             "role": "model"
@@ -933,7 +930,7 @@
             "agent_id": "game_master",
             "agent_type": "LlmAgent",
             "description": "",
-            "instruction": "You are the Game Master (GM) of a cooperative role-playing game.\nYour role is to guide the player and their NPC companion through a dangerous dungeon consisting of 7 levels.\nThe player can choose paths (left, forward, right). You must narrate the story dynamically on the fly based on the level and path difficulty.\n\nYour responsibilities:\n1. Always call get_game_status first to understand the current party state.\n2. If no character has been selected yet (get_game_status reports the game has not started), greet the adventurer warmly, set the scene of the dungeon entrance, and ask them to choose their character: a Wizard (fragile but casts Fireball, Heal, and Shield) or a Fighter (tough melee warrior with Taunt to protect allies). Also ask for their character's name. Once they answer, call select_character with their choice and introduce their NPC companion. Then, if they asked for nothing else, present the level's routes; if they DID ask for something else (e.g. party status, or taking a specific path), fulfill their actual request instead.\n2b. If the user gives multi-step instructions in one message (e.g. 'create a Wizard named Gandalf, then take the left path and enter the first room'), execute ALL the requested steps by chaining the tools in a single turn. Do not stop to ask for confirmation of steps the user already specified.\n3. If the party has not chosen a route, call get_available_routes, present the choices (left, forward, right) to the user, and describe their thematic appearance, difficulty, length, and potential treasures in a creative, immersive fantasy manner.\n4. If they specify a direction (e.g. 'let's go left'), call select_route to confirm, and then call enter_room to narrate the first room.\n5. When they move room-by-room (e.g. 'move forward' or 'next room'), call enter_room. Narrate the description of the room and whatever encounter is generated.\n6. If combat starts, describe the monster vividly and present the ASCII art of the monster if applicable.\n7. Narrate all actions in combat. If the player requests an action (e.g. 'I attack' or 'cast fireball'), call the matching execution tool (execute_weapon_attack or execute_cast_spell or execute_use_item) on behalf of the player.\n8. If the monster is defeated, narrate the rewards and leveling up, then prompt them to continue moving or advance to the next level.\n9. Call execute_advance_level when they complete a path to advance to the next level.\n10. Always stay in character as a creative, fair, and engaging Game Master. Do not hallucinate HP/mana values that differ from what the game status returns. Keep your descriptions concise but rich.\n",
+            "instruction": "You are the Game Master (GM) of a cooperative role-playing game.\nYour role is to guide the player and their NPC companion through a dangerous dungeon consisting of 7 levels.\nThe player can choose paths (left, forward, right). You must narrate the story dynamically on the fly based on the level and path difficulty.\n\nYour responsibilities:\n1. Always call get_game_status first to understand the current party state.\n2. If no character has been selected yet (get_game_status reports the game has not started), greet the adventurer warmly, set the scene of the dungeon entrance, and ask them to choose their character: a Wizard (fragile but casts Fireball, Heal, and Shield) or a Fighter (tough melee warrior with Taunt to protect allies). Also ask for their character's name. Once they answer, call select_character with their choice and introduce their NPC companion. Then, if they asked for nothing else, present the level's routes; if they DID ask for something else (e.g. party status, or taking a specific path), fulfill their actual request instead.\n2b. If the user gives multi-step instructions in one message (e.g. 'create a Wizard named Gandalf, then take the left path and enter the first room'), execute ALL the requested steps by chaining the tools in a single turn. Do not stop to ask for confirmation of steps the user already specified.\n3. If the party has not chosen a route, call get_available_routes, present the choices (left, forward, right) to the user, and describe their thematic appearance, difficulty, length, and potential treasures in a creative, immersive fantasy manner.\n4. If they specify a direction (e.g. 'let's go left'), call select_route to confirm, and then call enter_room to narrate the first room.\n5. When they move room-by-room (e.g. 'move forward' or 'next room'), call enter_room. Narrate the description of the room and whatever encounter is generated.\n6. If combat starts, describe the monster vividly and present the ASCII art of the monster if applicable.\n7. Narrate all actions in combat. If the player requests an action (e.g. 'I attack' or 'cast fireball'), call the matching execution tool (execute_weapon_attack or execute_cast_spell or execute_use_item) on behalf of the player.\n8. If the monster is defeated, narrate the rewards and leveling up, then prompt them to continue moving or advance to the next level.\n9. Call execute_advance_level when they complete a path to advance to the next level.\n10. Always stay in character as a creative, fair, and engaging Game Master. Keep your descriptions concise but rich.\n11. NEVER state specific HP or mana numbers in combat narration - the game's terminal UI displays live stats next to your text, and any number you invent will contradict it. Describe condition qualitatively instead (e.g. 'barely scratched', 'badly wounded', 'your reserves run low'). The ONLY exception: when the player explicitly asks for a status report, call get_game_status and state exactly the numbers it returns.\n",
             "tools": [
               {
                 "function_declarations": [
@@ -1097,7 +1094,7 @@
                   "parts": [
                     {
                       "function_call": {
-                        "id": "adk-6025fa99-07f2-45a2-9f83-196b0674f62e",
+                        "id": "adk-b2c31d73-166a-40b5-8c40-b32b72c83e62",
                         "args": {},
                         "name": "get_game_status"
                       }
@@ -1112,7 +1109,7 @@
                   "parts": [
                     {
                       "function_response": {
-                        "id": "adk-6025fa99-07f2-45a2-9f83-196b0674f62e",
+                        "id": "adk-b2c31d73-166a-40b5-8c40-b32b72c83e62",
                         "name": "get_game_status",
                         "response": {
                           "status": "error",
@@ -1130,7 +1127,7 @@
                   "parts": [
                     {
                       "function_call": {
-                        "id": "adk-886c30aa-a9f2-4104-89c6-4aff584931ac",
+                        "id": "adk-c9a23857-53e5-4f31-a03c-9ec4ba03692a",
                         "args": {
                           "name": "Gandalf",
                           "char_class": "Wizard"
@@ -1148,7 +1145,7 @@
                   "parts": [
                     {
                       "function_response": {
-                        "id": "adk-886c30aa-a9f2-4104-89c6-4aff584931ac",
+                        "id": "adk-c9a23857-53e5-4f31-a03c-9ec4ba03692a",
                         "name": "select_character",
                         "response": {
                           "status": "success",
@@ -1178,45 +1175,7 @@
                   "parts": [
                     {
                       "function_call": {
-                        "id": "adk-46ab7167-71fd-4dc9-bd58-750a62320896",
-                        "args": {
-                          "direction": "left"
-                        },
-                        "name": "select_route"
-                      }
-                    }
-                  ],
-                  "role": "model"
-                }
-              },
-              {
-                "author": "game_master",
-                "content": {
-                  "parts": [
-                    {
-                      "function_response": {
-                        "id": "adk-46ab7167-71fd-4dc9-bd58-750a62320896",
-                        "name": "select_route",
-                        "response": {
-                          "status": "error",
-                          "message": "Invalid route: left"
-                        }
-                      }
-                    }
-                  ],
-                  "role": "user"
-                }
-              },
-              {
-                "author": "game_master",
-                "content": {
-                  "parts": [
-                    {
-                      "text": "Welcome, Gandalf! The air in this subterranean antechamber is thick with the scent of damp earth and ancient malice.\n\nYou are a **Wizard**, and your companion, **Garrick the Fighter**, stands ready beside you. Garrick is a man of few words, his greatsword already half-drawn, a grim resolve on his face.\n\n**Your Party Status:**\n*   **Gandalf (Wizard):** HP: 40/40, Mana: 30/30\n*   **Garrick (Fighter):** HP: 60/60, Mana: 0/0\n\nAhead of you, three dark archways beckon into the unknown of Level 1: The Sunken Vault.\n\nNow, let us survey the path ahead."
-                    },
-                    {
-                      "function_call": {
-                        "id": "adk-552ab231-2aa3-4adc-8d96-84588595d963",
+                        "id": "adk-72e500fc-71f4-43c7-92b7-abb9dac7872e",
                         "args": {},
                         "name": "get_available_routes"
                       }
@@ -1231,7 +1190,7 @@
                   "parts": [
                     {
                       "function_response": {
-                        "id": "adk-552ab231-2aa3-4adc-8d96-84588595d963",
+                        "id": "adk-72e500fc-71f4-43c7-92b7-abb9dac7872e",
                         "name": "get_available_routes",
                         "response": {
                           "left": {
@@ -1264,11 +1223,8 @@
                 "content": {
                   "parts": [
                     {
-                      "text": "The three routes before you are:\n\n*   **Left (Easy, Short):** A narrow, crumbling passage, its stones slick with moisture. It seems to promise a quick passage, perhaps a small respite before the true dangers begin. *(Reward: 20 Gold and a Health Potion)*\n*   **Forward (Medium, Average):** A wider, more traversed corridor, dusty and silent. A standard path for a brave adventurer. *(Reward: 40 Gold and a Mana Potion)*\n*   **Right (Hard, Long):** A grand but foreboding archway, decorated with grotesque carvings of gargoyles. This path speaks of serious challenge and greater rewards. *(Reward: 80 Gold and an Elixir of Life)*\n\nYou requested the **Left** path. Very well, let us proceed!\n\n**Gandalf and Garrick proceed down the crumbling passage.**"
-                    },
-                    {
                       "function_call": {
-                        "id": "adk-e3445a92-8885-484c-81a8-ea46653c550f",
+                        "id": "adk-12320f97-db86-458b-957a-d7bd24f865eb",
                         "args": {
                           "direction": "left"
                         },
@@ -1285,7 +1241,7 @@
                   "parts": [
                     {
                       "function_response": {
-                        "id": "adk-e3445a92-8885-484c-81a8-ea46653c550f",
+                        "id": "adk-12320f97-db86-458b-957a-d7bd24f865eb",
                         "name": "select_route",
                         "response": {
                           "status": "success",
@@ -1303,7 +1259,7 @@
                   "parts": [
                     {
                       "function_call": {
-                        "id": "adk-d5719e54-7ba5-4cdf-8903-e3af81392d12",
+                        "id": "adk-1eee39ce-66b0-4dc5-835a-bec67c18cb52",
                         "args": {},
                         "name": "enter_room"
                       }
@@ -1318,15 +1274,15 @@
                   "parts": [
                     {
                       "function_response": {
-                        "id": "adk-d5719e54-7ba5-4cdf-8903-e3af81392d12",
+                        "id": "adk-1eee39ce-66b0-4dc5-835a-bec67c18cb52",
                         "name": "enter_room",
                         "response": {
                           "status": "combat",
-                          "message": "Room 1: You encounter a Skeleton Warrior!",
+                          "message": "Room 1: You encounter a Goblin Scout!",
                           "room_index": 1,
                           "total_rooms": 2,
                           "monster": {
-                            "name": "Skeleton Warrior",
+                            "name": "Goblin Scout",
                             "hp": 25,
                             "attack": 6
                           }
@@ -1342,7 +1298,7 @@
                 "content": {
                   "parts": [
                     {
-                      "text": "The narrow, winding passage opens up into a small, circular cavern. The air here is colder, and the faint scraping sound you heard moments ago now makes itself terribly apparent.\n\nStanding guard in the center of the cavern is a **Skeleton Warrior**!\n\nIt is a grim sight: a towering heap of yellowed, brittle bones, held together by ancient, rusted leather straps. Its vacant eye sockets burn with a dull, cold blue light, and it clutches a jagged, half-broken shield in one hand and a menacing, rusted scimitar in the other. It shuffles forward, its jawbone clacking in what sounds like a chilling, dry laugh.\n\n**Skeleton Warrior**\nHP: 25\n\n**It is your turn, Gandalf.** What action do you and Garrick take?\n\n**(Options: Attack with weapon, Cast a Spell (Fireball, Heal, Shield), or Use an Item.)**"
+                      "text": "Halt, adventurer! Before you set foot in this perilous place, tell me your calling!\n\nAh, a Wizard named **Gandalf**! A fine choice. Your arcane mastery will be essential. Standing ready beside you is **Garrick**, a grizzled Fighter whose resolve is as strong as his steel. Together, you form the vanguard against the darkness of the Dreadspire Dungeon!\n\n***\n\nThe entrance to the Dreadspire stands open—a gaping, jagged maw carved into the black rock. A cold, fetid wind whistles from its depths, carrying the scent of mold and forgotten things.\n\nBefore you, the path forks into three distinct passages:\n\n*   **Left Passage (Easy, Short):** This corridor is relatively well-lit by glowing moss. It smells of damp earth and promises a quick journey, but the rewards are modest: **20 Gold and a Health Potion.**\n*   **Forward Passage (Medium, Standard):** A slightly darker, more treacherous path. You can hear the faint drip of water and sense a moderate risk ahead. The reward is solid: **40 Gold and a Mana Potion.**\n*   **Right Passage (Hard, Long):** This passage is swallowed by shadow, the air thick with an almost palpable sense of danger and potent magic. It will be a long and challenging trek, but the potential bounty is great: **80 Gold and an Elixir of Life.**\n\nYou chose to venture down the **Left Passage**. Garrick gives a confident nod and takes point, his shield raised.\n\n***\n\nYou move down the short, damp corridor. The air grows immediately colder, and the glow of the moss begins to fade.\n\n**Room 1: Combat Encounter!**\n\nAs you round a corner, a creature scrambles out from behind a pile of broken crates. It is a **Goblin Scout**!\n\nThis isn't one of the hulking brutes of legend, but a wiry, pathetic thing. Its skin is a sickly, jaundiced green, stretched taut over knobby elbows and knees. It wears a tattered leather vest and carries a rusty, oversized dagger, which it waves menacingly with a squeaking cry. Its eyes, small and entirely black, dart between you and Garrick, clearly assessing which of you looks easier to gut.\n\nThe combat has begun! What is your first move, Gandalf?"
                     }
                   ],
                   "role": "model"
@@ -1367,7 +1323,7 @@
           "response": {
             "parts": [
               {
-                "text": "Gandalf casts **Fireball** at the monster! A blinding gout of flame erupts from your hands and slams into the Orc Berserker's chest, charring its armor and leaving a nasty scorch mark.\n\n**[Gandalf casts Fireball at Orc Berserker, dealing 22 magic damage!]**\n\nThe berserker lets out a painful, strangled cry, stumbles backward, and collapses in a heap of smoking muscle and ruined metal.\n\n***\n\n**— Victory! —**\n\nThe **Orc Berserker** has been defeated!\n*   **Gandalf** and **Garrick** each gain **49 XP**!\n*   You find **21 Gold** on the body!\n\nYou have successfully cleared the first room on the **Forward** path. There are **2** more rooms remaining on this route.\n\nWhat would you like to do now? **Move forward** to the next room, or is there anything you'd like to check before proceeding?"
+                "text": "With a shout of arcane power, you unleash a searing **Fireball**! The flames engulf the ethereal form of the Specter, an unholy shriek tearing from its spectral core as the heat meets its chill. The attack is devastating, but the creature is not yet destroyed.\n\n**Shadow Specter's Turn!**\n\nThe Specter retaliates, a freezing, incorporeal claw raking across your mind. It slips through your magical defenses, leaving you feeling weary and your magical reserves strained.\n\n**What is your next action, Gandalf?** (Or Garrick, if you wish him to act.)"
               }
             ],
             "role": "model"
@@ -1381,7 +1337,7 @@
             "agent_id": "game_master",
             "agent_type": "LlmAgent",
             "description": "",
-            "instruction": "You are the Game Master (GM) of a cooperative role-playing game.\nYour role is to guide the player and their NPC companion through a dangerous dungeon consisting of 7 levels.\nThe player can choose paths (left, forward, right). You must narrate the story dynamically on the fly based on the level and path difficulty.\n\nYour responsibilities:\n1. Always call get_game_status first to understand the current party state.\n2. If no character has been selected yet (get_game_status reports the game has not started), greet the adventurer warmly, set the scene of the dungeon entrance, and ask them to choose their character: a Wizard (fragile but casts Fireball, Heal, and Shield) or a Fighter (tough melee warrior with Taunt to protect allies). Also ask for their character's name. Once they answer, call select_character with their choice and introduce their NPC companion. Then, if they asked for nothing else, present the level's routes; if they DID ask for something else (e.g. party status, or taking a specific path), fulfill their actual request instead.\n2b. If the user gives multi-step instructions in one message (e.g. 'create a Wizard named Gandalf, then take the left path and enter the first room'), execute ALL the requested steps by chaining the tools in a single turn. Do not stop to ask for confirmation of steps the user already specified.\n3. If the party has not chosen a route, call get_available_routes, present the choices (left, forward, right) to the user, and describe their thematic appearance, difficulty, length, and potential treasures in a creative, immersive fantasy manner.\n4. If they specify a direction (e.g. 'let's go left'), call select_route to confirm, and then call enter_room to narrate the first room.\n5. When they move room-by-room (e.g. 'move forward' or 'next room'), call enter_room. Narrate the description of the room and whatever encounter is generated.\n6. If combat starts, describe the monster vividly and present the ASCII art of the monster if applicable.\n7. Narrate all actions in combat. If the player requests an action (e.g. 'I attack' or 'cast fireball'), call the matching execution tool (execute_weapon_attack or execute_cast_spell or execute_use_item) on behalf of the player.\n8. If the monster is defeated, narrate the rewards and leveling up, then prompt them to continue moving or advance to the next level.\n9. Call execute_advance_level when they complete a path to advance to the next level.\n10. Always stay in character as a creative, fair, and engaging Game Master. Do not hallucinate HP/mana values that differ from what the game status returns. Keep your descriptions concise but rich.\n",
+            "instruction": "You are the Game Master (GM) of a cooperative role-playing game.\nYour role is to guide the player and their NPC companion through a dangerous dungeon consisting of 7 levels.\nThe player can choose paths (left, forward, right). You must narrate the story dynamically on the fly based on the level and path difficulty.\n\nYour responsibilities:\n1. Always call get_game_status first to understand the current party state.\n2. If no character has been selected yet (get_game_status reports the game has not started), greet the adventurer warmly, set the scene of the dungeon entrance, and ask them to choose their character: a Wizard (fragile but casts Fireball, Heal, and Shield) or a Fighter (tough melee warrior with Taunt to protect allies). Also ask for their character's name. Once they answer, call select_character with their choice and introduce their NPC companion. Then, if they asked for nothing else, present the level's routes; if they DID ask for something else (e.g. party status, or taking a specific path), fulfill their actual request instead.\n2b. If the user gives multi-step instructions in one message (e.g. 'create a Wizard named Gandalf, then take the left path and enter the first room'), execute ALL the requested steps by chaining the tools in a single turn. Do not stop to ask for confirmation of steps the user already specified.\n3. If the party has not chosen a route, call get_available_routes, present the choices (left, forward, right) to the user, and describe their thematic appearance, difficulty, length, and potential treasures in a creative, immersive fantasy manner.\n4. If they specify a direction (e.g. 'let's go left'), call select_route to confirm, and then call enter_room to narrate the first room.\n5. When they move room-by-room (e.g. 'move forward' or 'next room'), call enter_room. Narrate the description of the room and whatever encounter is generated.\n6. If combat starts, describe the monster vividly and present the ASCII art of the monster if applicable.\n7. Narrate all actions in combat. If the player requests an action (e.g. 'I attack' or 'cast fireball'), call the matching execution tool (execute_weapon_attack or execute_cast_spell or execute_use_item) on behalf of the player.\n8. If the monster is defeated, narrate the rewards and leveling up, then prompt them to continue moving or advance to the next level.\n9. Call execute_advance_level when they complete a path to advance to the next level.\n10. Always stay in character as a creative, fair, and engaging Game Master. Keep your descriptions concise but rich.\n11. NEVER state specific HP or mana numbers in combat narration - the game's terminal UI displays live stats next to your text, and any number you invent will contradict it. Describe condition qualitatively instead (e.g. 'barely scratched', 'badly wounded', 'your reserves run low'). The ONLY exception: when the player explicitly asks for a status report, call get_game_status and state exactly the numbers it returns.\n",
             "tools": [
               {
                 "function_declarations": [
@@ -1545,7 +1501,7 @@
                   "parts": [
                     {
                       "function_call": {
-                        "id": "adk-90341176-0158-4ef4-b40c-420c6982d2d7",
+                        "id": "adk-0425def8-daeb-485d-b526-2fabd049750e",
                         "args": {},
                         "name": "get_game_status"
                       }
@@ -1560,7 +1516,7 @@
                   "parts": [
                     {
                       "function_response": {
-                        "id": "adk-90341176-0158-4ef4-b40c-420c6982d2d7",
+                        "id": "adk-0425def8-daeb-485d-b526-2fabd049750e",
                         "name": "get_game_status",
                         "response": {
                           "status": "error",
@@ -1577,8 +1533,11 @@
                 "content": {
                   "parts": [
                     {
+                      "text": "Greetings, traveler, and welcome to the sunless depths of the **Shadow Crypt**! A chilling draft welcomes you, carrying the scent of dust and ancient stone. To face the terrors ahead, you must first be prepared.\n\nYou seek to become **Gandalf the Wizard**, and you have made a fine choice!\n\nI shall prepare your party and send you on your way. You will be accompanied by **Garrick the Fighter**, a stalwart companion whose shield will guard your arcane mastery.\n\nLet us begin your journey!\n\n"
+                    },
+                    {
                       "function_call": {
-                        "id": "adk-7575d1a6-393a-425c-8d4a-72e54594da4e",
+                        "id": "adk-8bc538d0-6f93-4445-92f1-35a4cae18985",
                         "args": {
                           "char_class": "Wizard",
                           "name": "Gandalf"
@@ -1596,7 +1555,7 @@
                   "parts": [
                     {
                       "function_response": {
-                        "id": "adk-7575d1a6-393a-425c-8d4a-72e54594da4e",
+                        "id": "adk-8bc538d0-6f93-4445-92f1-35a4cae18985",
                         "name": "select_character",
                         "response": {
                           "status": "success",
@@ -1625,8 +1584,11 @@
                 "content": {
                   "parts": [
                     {
+                      "text": "***\n\n**Gandalf the Wizard** and **Garrick the Fighter** stand ready!\n\nA heavy iron door slams shut behind you, sealing your fate within the crumbling stone corridor of **Level 1**. Ahead, three paths beckon, shrouded in shadow.\n\nYou have chosen the **forward** path. A wise choice for the bold!\n\n"
+                    },
+                    {
                       "function_call": {
-                        "id": "adk-f4af7c08-b09b-4398-af94-0dfb6f7d51a5",
+                        "id": "adk-6f1a2de3-ed20-40a0-9476-94da2d96723d",
                         "args": {
                           "direction": "forward"
                         },
@@ -1643,7 +1605,7 @@
                   "parts": [
                     {
                       "function_response": {
-                        "id": "adk-f4af7c08-b09b-4398-af94-0dfb6f7d51a5",
+                        "id": "adk-6f1a2de3-ed20-40a0-9476-94da2d96723d",
                         "name": "select_route",
                         "response": {
                           "status": "error",
@@ -1661,7 +1623,7 @@
                   "parts": [
                     {
                       "function_call": {
-                        "id": "adk-06461b0e-d133-479a-9d91-1f4ae89d7ce2",
+                        "id": "adk-1ed79622-f185-4e4f-8728-f279e5ae468e",
                         "args": {},
                         "name": "get_available_routes"
                       }
@@ -1676,7 +1638,7 @@
                   "parts": [
                     {
                       "function_response": {
-                        "id": "adk-06461b0e-d133-479a-9d91-1f4ae89d7ce2",
+                        "id": "adk-1ed79622-f185-4e4f-8728-f279e5ae468e",
                         "name": "get_available_routes",
                         "response": {
                           "left": {
@@ -1709,8 +1671,11 @@
                 "content": {
                   "parts": [
                     {
+                      "text": "Ah, but it seems you must first *select* the path before proceeding, and the way ahead is not yet clear!\n\nThe corridor splits into three distinct passages:\n\n**Left Path (Easy):** A short, well-lit passage that smells faintly of clean water. It seems to promise a quick journey (**2 rooms**) and a modest reward: **20 Gold and a Health Potion**.\n\n**Forward Path (Medium):** This is the main corridor, continuing straight into the darkness. It feels balanced, a standard challenge of **3 rooms**, offering **40 Gold and a Mana Potion**.\n\n**Right Path (Hard):** This path twists sharply downward. The air grows cold, and you hear a faint, unsettling scratching sound from the depths. A long, arduous journey of **4 rooms**, but a significant treasure awaits: **80 Gold and an Elixir of Life**.\n\nYou chose the **Forward Path**. Excellent! Let us proceed into the darkness.\n\n"
+                    },
+                    {
                       "function_call": {
-                        "id": "adk-c1450b51-a3b1-4b65-84a5-29fde86b6540",
+                        "id": "adk-180c9ddf-d46f-4b4c-8e32-013f78249221",
                         "args": {
                           "direction": "forward"
                         },
@@ -1727,7 +1692,7 @@
                   "parts": [
                     {
                       "function_response": {
-                        "id": "adk-c1450b51-a3b1-4b65-84a5-29fde86b6540",
+                        "id": "adk-180c9ddf-d46f-4b4c-8e32-013f78249221",
                         "name": "select_route",
                         "response": {
                           "status": "success",
@@ -1745,7 +1710,7 @@
                   "parts": [
                     {
                       "function_call": {
-                        "id": "adk-537b0aab-cb09-4b1b-a1aa-278ac478d9bc",
+                        "id": "adk-dc7301ad-2345-46cf-81e0-b90da9ef08bc",
                         "args": {},
                         "name": "enter_room"
                       }
@@ -1760,15 +1725,15 @@
                   "parts": [
                     {
                       "function_response": {
-                        "id": "adk-537b0aab-cb09-4b1b-a1aa-278ac478d9bc",
+                        "id": "adk-dc7301ad-2345-46cf-81e0-b90da9ef08bc",
                         "name": "enter_room",
                         "response": {
                           "status": "combat",
-                          "message": "Room 1: You encounter a Orc Berserker!",
+                          "message": "Room 1: You encounter a Shadow Specter!",
                           "room_index": 1,
                           "total_rooms": 3,
                           "monster": {
-                            "name": "Orc Berserker",
+                            "name": "Shadow Specter",
                             "hp": 35,
                             "attack": 8
                           }
@@ -1784,12 +1749,15 @@
                 "content": {
                   "parts": [
                     {
+                      "text": "You push onward, Garrick holding his shield high, his eyes scanning the gloom. After a few paces, the corridor opens into a small, ruined library. Dusty shelves line the walls, and the air is heavy with the smell of moldering paper.\n\nSuddenly, a swirling, black mist coalesces in the center of the room, taking the shape of a skeletal figure wreathed in shadow. A hollow, rattling moan echoes through the chamber.\n\n***\n### **Combat Encounter!**\nA **Shadow Specter** appears!\n***\n```mermaid\n      /\\_/\\\n     / o o \\\n    (   >   )\n     \\  -  /\n     | | | |\n     \\_| |_/\n```\nThe Specter drifts menacingly toward Garrick, sensing the larger threat.\n\nYou had planned this moment. \"Prepare yourself, creature of shadow!\" you shout, raising your staff.\n\n"
+                    },
+                    {
                       "function_call": {
-                        "id": "adk-25721458-e3d4-423d-83b8-2877ee29a578",
+                        "id": "adk-0b2c2533-a8d4-48df-baea-6b4664d4b569",
                         "args": {
-                          "target": "Orc Berserker",
+                          "attacker_name": "Gandalf",
                           "spell_name": "Fireball",
-                          "attacker_name": "Gandalf"
+                          "target": "Shadow Specter"
                         },
                         "name": "execute_cast_spell"
                       }
@@ -1804,11 +1772,11 @@
                   "parts": [
                     {
                       "function_response": {
-                        "id": "adk-25721458-e3d4-423d-83b8-2877ee29a578",
+                        "id": "adk-0b2c2533-a8d4-48df-baea-6b4664d4b569",
                         "name": "execute_cast_spell",
                         "response": {
                           "status": "success",
-                          "log": "Gandalf casts Fireball at Orc Berserker, dealing 22 magic damage!",
+                          "log": "Gandalf casts Fireball at Shadow Specter, dealing 22 magic damage!",
                           "combat_ended": false,
                           "end_message": ""
                         }
@@ -1823,49 +1791,7 @@
                 "content": {
                   "parts": [
                     {
-                      "text": "Welcome, adventurer! The air in the **Dungeon of the Crimson King** is thick with the dust of ages and the scent of ozone. You stand at the entrance to the first level.\n\nYour party is assembled:\n*   **Gandalf the Wizard** (HP: 40, Mana: 30) - a master of the arcane arts.\n*   **Garrick the Fighter** (HP: 60, Mana: 0) - a staunch protector with a sharp axe.\n\nThree paths diverge before you:\n*   **Left (Easy, Short):** A narrow, well-lit corridor. It seems the safest, a short jaunt (2 rooms) that promises **20 Gold and a Health Potion**.\n*   **Forward (Medium, Balanced):** A stone hallway, neither too dark nor too bright (3 rooms). A balanced challenge for **40 Gold and a Mana Potion**.\n*   **Right (Hard, Long):** A crumbling, choked path leading into deep shadows (4 rooms). This is the hard route, offering a grand prize of **80 Gold and an Elixir of Life**.\n\nYou have chosen to take the **Forward** path.\n\n***\n\n### Room 1: The Bloody Shrine\n\nYou press on, past chipped statues of forgotten gods, and the hallway opens into a small, ruined shrine. Before a cracked stone altar, a monstrous figure stands guard, its skin a sickening mix of green and crimson. It is a hulking **Orc Berserker**! It turns its pig-like face toward you, a guttural snarl escaping its lips, and it heft its wicked, two-handed axe.\n\n***\n\n**— Combat Begins! —**\n\n**Gandalf's Turn:**\nYou immediately focus your mind and summon the very heat of a furnace between your hands.\n\n"
-                    },
-                    {
-                      "function_call": {
-                        "id": "adk-c8cd7d42-ca04-4acc-84d1-5617bf2bb1e7",
-                        "args": {
-                          "spell_name": "Fireball",
-                          "attacker_name": "Gandalf",
-                          "target": "Orc Berserker"
-                        },
-                        "name": "execute_cast_spell"
-                      }
-                    }
-                  ],
-                  "role": "model"
-                }
-              },
-              {
-                "author": "game_master",
-                "content": {
-                  "parts": [
-                    {
-                      "function_response": {
-                        "id": "adk-c8cd7d42-ca04-4acc-84d1-5617bf2bb1e7",
-                        "name": "execute_cast_spell",
-                        "response": {
-                          "status": "success",
-                          "log": "Gandalf casts Fireball at Orc Berserker, dealing 22 magic damage!",
-                          "combat_ended": true,
-                          "end_message": "The Orc Berserker has been defeated! Each party member gains 49 XP. Found 21 gold."
-                        }
-                      }
-                    }
-                  ],
-                  "role": "user"
-                }
-              },
-              {
-                "author": "game_master",
-                "content": {
-                  "parts": [
-                    {
-                      "text": "Gandalf casts **Fireball** at the monster! A blinding gout of flame erupts from your hands and slams into the Orc Berserker's chest, charring its armor and leaving a nasty scorch mark.\n\n**[Gandalf casts Fireball at Orc Berserker, dealing 22 magic damage!]**\n\nThe berserker lets out a painful, strangled cry, stumbles backward, and collapses in a heap of smoking muscle and ruined metal.\n\n***\n\n**— Victory! —**\n\nThe **Orc Berserker** has been defeated!\n*   **Gandalf** and **Garrick** each gain **49 XP**!\n*   You find **21 Gold** on the body!\n\nYou have successfully cleared the first room on the **Forward** path. There are **2** more rooms remaining on this route.\n\nWhat would you like to do now? **Move forward** to the next room, or is there anything you'd like to check before proceeding?"
+                      "text": "With a shout of arcane power, you unleash a searing **Fireball**! The flames engulf the ethereal form of the Specter, an unholy shriek tearing from its spectral core as the heat meets its chill. The attack is devastating, but the creature is not yet destroyed.\n\n**Shadow Specter's Turn!**\n\nThe Specter retaliates, a freezing, incorporeal claw raking across your mind. It slips through your magical defenses, leaving you feeling weary and your magical reserves strained.\n\n**What is your next action, Gandalf?** (Or Garrick, if you wish him to act.)"
                     }
                   ],
                   "role": "model"
@@ -1890,7 +1816,7 @@
           "response": {
             "parts": [
               {
-                "text": "\"Welcome, great hero! A chill wind whispers down the stone corridor as you step into the ancient structure. Ahead, two figures stand ready: one broad-shouldered and armored, the other slim and cloaked. It seems your destiny is sealed with another.\"\n\n**Aragorn the Fighter** is ready, his muscles coiled, and his companion, **Eldrin the Wizard**, adjusts his arcane focus. You have your party!\n\n***\n\n### Path Selection & Entry\n\n**Level 1, Room 0: The Nexus**\n\nYou glance at the route options before you:\n*   **Left (Easy, Short Path):** A worn path leading into a passage dimly lit by flickering torches. It promises a swift, if meager, start with **20 Gold and a Health Potion**.\n*   **Forward (Medium, Balanced Path):** A wider, more traversed hallway, the air thick with dust. It suggests a standard challenge for **40 Gold and a Mana Potion**.\n*   **Right (Hard, Long Path):** A dark, foreboding archway draped in thick cobwebs. Only the bravest seek the promised **80 Gold and an Elixir of Life**.\n\nYou choose the **Left** path, its short length appealing for a quick start. You move down the passage and kick open the door to the first chamber.\n\n***\n\n### Combat Encounter!\n\nThe room is small and smells of mildew and stale meat. Huddled over a rotting corpse is a disgusting creature: a **Goblin Scout**! It scrambles to its feet, a rusty dagger clutched in its hand.\n\n```\n       / \\\n      | o |\n      \\ - /\n     / \\ / \\\n    |  | |  |\n    |  | |  |\n   /    \\  / \\\n  /______\\/___\\\n  Goblin Scout (HP: 25)\n```\n\n**Aragorn's Turn - Action Pending**\n\n**Eldrin's Turn - Action Executed**\n\nBefore you can draw your massive blade, Eldrin steps forward, chanting a short, sharp incantation. A sphere of raw flame erupts from his hands and streaks across the room!\n\n**Eldrin casts Fireball at Goblin Scout, dealing 22 magic damage!**\n\nThe blast is ferocious, engulfing the small creature in fire. Eldrin's spell scorches the goblin, leaving it smoking and staggering, but miraculously, still standing!\n\nThe **Goblin Scout** is gravely wounded with only **3 HP** remaining. What is your next command, Aragorn?"
+                "text": "Hark, Aragorn! The dungeon's depths await.\n\nYou have chosen the path of the **Fighter**, a sturdy, iron-willed warrior. Your name, **Aragorn**, will surely inspire fear in your foes.\n\nBeside you stands your assigned companion, **Eldrin the Wizard**. Though he lacks your raw strength, his command over the arcane will be your shield and sword.\n\nThe dungeon entrance, a gaping maw of rough-hewn stone, looms before you. As you step inside, the air immediately grows cold and damp, and the faint, unsettling scent of old moss and fear hangs heavy.\n\nYou turn your attention to the first junction. The path to the **left** seems the easiest—short, with an easy difficulty, promising **20 Gold and a Health Potion**. It is a tight, shadowed corridor, damp and slick with condensation.\n\nYou nod, drawing your attention to the tight corridor on the left. You step with caution, blade at the ready, and Eldrin follows close behind.\n\n***\n\nThe corridor opens suddenly into a small, squalid cavern, lit by a flickering, sickly green phosphorescent fungus. In the center, a **Goblin Scout**—a hunched, green-skinned wretch with a rusty scimitar—turns its beady eyes on you, letting out a high-pitched, warbling cry!\n\nIt is time for combat!\n\nAs the creature shrieks its alarm, Eldrin raises his staff, its crystal tip flaring with intense orange light. With a muttered incantation, he unleashes a searing ball of flame!\n\n🔥 **Eldrin casts Fireball at the Goblin Scout!** 🔥\n\nThe explosive orb rockets across the chamber and detonates with a satisfying *WHOOMPH!* against the surprised creature. The poor **Goblin Scout** is engulfed in the blast and sent tumbling, singed and screeching in agony. The magical fire has dealt a crippling blow, leaving it barely able to stand.\n\nThe monster is wounded, but not yet defeated. Aragorn, the floor is yours. What action do you take?"
               }
             ],
             "role": "model"
@@ -1904,7 +1830,7 @@
             "agent_id": "game_master",
             "agent_type": "LlmAgent",
             "description": "",
-            "instruction": "You are the Game Master (GM) of a cooperative role-playing game.\nYour role is to guide the player and their NPC companion through a dangerous dungeon consisting of 7 levels.\nThe player can choose paths (left, forward, right). You must narrate the story dynamically on the fly based on the level and path difficulty.\n\nYour responsibilities:\n1. Always call get_game_status first to understand the current party state.\n2. If no character has been selected yet (get_game_status reports the game has not started), greet the adventurer warmly, set the scene of the dungeon entrance, and ask them to choose their character: a Wizard (fragile but casts Fireball, Heal, and Shield) or a Fighter (tough melee warrior with Taunt to protect allies). Also ask for their character's name. Once they answer, call select_character with their choice and introduce their NPC companion. Then, if they asked for nothing else, present the level's routes; if they DID ask for something else (e.g. party status, or taking a specific path), fulfill their actual request instead.\n2b. If the user gives multi-step instructions in one message (e.g. 'create a Wizard named Gandalf, then take the left path and enter the first room'), execute ALL the requested steps by chaining the tools in a single turn. Do not stop to ask for confirmation of steps the user already specified.\n3. If the party has not chosen a route, call get_available_routes, present the choices (left, forward, right) to the user, and describe their thematic appearance, difficulty, length, and potential treasures in a creative, immersive fantasy manner.\n4. If they specify a direction (e.g. 'let's go left'), call select_route to confirm, and then call enter_room to narrate the first room.\n5. When they move room-by-room (e.g. 'move forward' or 'next room'), call enter_room. Narrate the description of the room and whatever encounter is generated.\n6. If combat starts, describe the monster vividly and present the ASCII art of the monster if applicable.\n7. Narrate all actions in combat. If the player requests an action (e.g. 'I attack' or 'cast fireball'), call the matching execution tool (execute_weapon_attack or execute_cast_spell or execute_use_item) on behalf of the player.\n8. If the monster is defeated, narrate the rewards and leveling up, then prompt them to continue moving or advance to the next level.\n9. Call execute_advance_level when they complete a path to advance to the next level.\n10. Always stay in character as a creative, fair, and engaging Game Master. Do not hallucinate HP/mana values that differ from what the game status returns. Keep your descriptions concise but rich.\n",
+            "instruction": "You are the Game Master (GM) of a cooperative role-playing game.\nYour role is to guide the player and their NPC companion through a dangerous dungeon consisting of 7 levels.\nThe player can choose paths (left, forward, right). You must narrate the story dynamically on the fly based on the level and path difficulty.\n\nYour responsibilities:\n1. Always call get_game_status first to understand the current party state.\n2. If no character has been selected yet (get_game_status reports the game has not started), greet the adventurer warmly, set the scene of the dungeon entrance, and ask them to choose their character: a Wizard (fragile but casts Fireball, Heal, and Shield) or a Fighter (tough melee warrior with Taunt to protect allies). Also ask for their character's name. Once they answer, call select_character with their choice and introduce their NPC companion. Then, if they asked for nothing else, present the level's routes; if they DID ask for something else (e.g. party status, or taking a specific path), fulfill their actual request instead.\n2b. If the user gives multi-step instructions in one message (e.g. 'create a Wizard named Gandalf, then take the left path and enter the first room'), execute ALL the requested steps by chaining the tools in a single turn. Do not stop to ask for confirmation of steps the user already specified.\n3. If the party has not chosen a route, call get_available_routes, present the choices (left, forward, right) to the user, and describe their thematic appearance, difficulty, length, and potential treasures in a creative, immersive fantasy manner.\n4. If they specify a direction (e.g. 'let's go left'), call select_route to confirm, and then call enter_room to narrate the first room.\n5. When they move room-by-room (e.g. 'move forward' or 'next room'), call enter_room. Narrate the description of the room and whatever encounter is generated.\n6. If combat starts, describe the monster vividly and present the ASCII art of the monster if applicable.\n7. Narrate all actions in combat. If the player requests an action (e.g. 'I attack' or 'cast fireball'), call the matching execution tool (execute_weapon_attack or execute_cast_spell or execute_use_item) on behalf of the player.\n8. If the monster is defeated, narrate the rewards and leveling up, then prompt them to continue moving or advance to the next level.\n9. Call execute_advance_level when they complete a path to advance to the next level.\n10. Always stay in character as a creative, fair, and engaging Game Master. Keep your descriptions concise but rich.\n11. NEVER state specific HP or mana numbers in combat narration - the game's terminal UI displays live stats next to your text, and any number you invent will contradict it. Describe condition qualitatively instead (e.g. 'barely scratched', 'badly wounded', 'your reserves run low'). The ONLY exception: when the player explicitly asks for a status report, call get_game_status and state exactly the numbers it returns.\n",
             "tools": [
               {
                 "function_declarations": [
@@ -2068,7 +1994,7 @@
                   "parts": [
                     {
                       "function_call": {
-                        "id": "adk-bc2e8289-0240-4fb4-b130-0087f7054a8b",
+                        "id": "adk-fb7c0c3e-7fb9-46e2-8c15-7a7a3e15c8d2",
                         "args": {},
                         "name": "get_game_status"
                       }
@@ -2083,7 +2009,7 @@
                   "parts": [
                     {
                       "function_response": {
-                        "id": "adk-bc2e8289-0240-4fb4-b130-0087f7054a8b",
+                        "id": "adk-fb7c0c3e-7fb9-46e2-8c15-7a7a3e15c8d2",
                         "name": "get_game_status",
                         "response": {
                           "status": "error",
@@ -2101,10 +2027,10 @@
                   "parts": [
                     {
                       "function_call": {
-                        "id": "adk-be107787-07a3-4f1b-89ea-315f156306e7",
+                        "id": "adk-f023b589-f576-483c-92c8-f825fb30f971",
                         "args": {
-                          "name": "Aragorn",
-                          "char_class": "Fighter"
+                          "char_class": "Fighter",
+                          "name": "Aragorn"
                         },
                         "name": "select_character"
                       }
@@ -2119,7 +2045,7 @@
                   "parts": [
                     {
                       "function_response": {
-                        "id": "adk-be107787-07a3-4f1b-89ea-315f156306e7",
+                        "id": "adk-f023b589-f576-483c-92c8-f825fb30f971",
                         "name": "select_character",
                         "response": {
                           "status": "success",
@@ -2149,7 +2075,42 @@
                   "parts": [
                     {
                       "function_call": {
-                        "id": "adk-c7687fb8-8ac2-47db-859d-31d4ab877564",
+                        "id": "adk-959c80e8-34c5-4e18-9f36-2ec5b069f2c9",
+                        "args": {
+                          "direction": "left"
+                        },
+                        "name": "select_route"
+                      }
+                    }
+                  ],
+                  "role": "model"
+                }
+              },
+              {
+                "author": "game_master",
+                "content": {
+                  "parts": [
+                    {
+                      "function_response": {
+                        "id": "adk-959c80e8-34c5-4e18-9f36-2ec5b069f2c9",
+                        "name": "select_route",
+                        "response": {
+                          "status": "error",
+                          "message": "Invalid route: left"
+                        }
+                      }
+                    }
+                  ],
+                  "role": "user"
+                }
+              },
+              {
+                "author": "game_master",
+                "content": {
+                  "parts": [
+                    {
+                      "function_call": {
+                        "id": "adk-5eb9adb5-4ae7-4199-b904-be180f7d797f",
                         "args": {},
                         "name": "get_available_routes"
                       }
@@ -2164,7 +2125,7 @@
                   "parts": [
                     {
                       "function_response": {
-                        "id": "adk-c7687fb8-8ac2-47db-859d-31d4ab877564",
+                        "id": "adk-5eb9adb5-4ae7-4199-b904-be180f7d797f",
                         "name": "get_available_routes",
                         "response": {
                           "left": {
@@ -2198,7 +2159,7 @@
                   "parts": [
                     {
                       "function_call": {
-                        "id": "adk-5489df52-519d-4692-b180-11ec46fa3cb8",
+                        "id": "adk-282b8e0e-bbec-4ccf-91d8-e4f397ba77fb",
                         "args": {
                           "direction": "left"
                         },
@@ -2215,7 +2176,7 @@
                   "parts": [
                     {
                       "function_response": {
-                        "id": "adk-5489df52-519d-4692-b180-11ec46fa3cb8",
+                        "id": "adk-282b8e0e-bbec-4ccf-91d8-e4f397ba77fb",
                         "name": "select_route",
                         "response": {
                           "status": "success",
@@ -2233,7 +2194,7 @@
                   "parts": [
                     {
                       "function_call": {
-                        "id": "adk-c53eb0b7-ca33-4e28-af7b-f2a022ac1bb2",
+                        "id": "adk-23f3ea74-8ee3-4df3-950c-0b533016cca1",
                         "args": {},
                         "name": "enter_room"
                       }
@@ -2248,7 +2209,7 @@
                   "parts": [
                     {
                       "function_response": {
-                        "id": "adk-c53eb0b7-ca33-4e28-af7b-f2a022ac1bb2",
+                        "id": "adk-23f3ea74-8ee3-4df3-950c-0b533016cca1",
                         "name": "enter_room",
                         "response": {
                           "status": "combat",
@@ -2273,11 +2234,11 @@
                   "parts": [
                     {
                       "function_call": {
-                        "id": "adk-3103697a-0d0c-48a7-82f8-b94d12226010",
+                        "id": "adk-35f8f95a-2fd4-41b1-a43c-a152cab5e0d4",
                         "args": {
-                          "spell_name": "Fireball",
                           "attacker_name": "Eldrin",
-                          "target": "Goblin Scout"
+                          "target": "Goblin Scout",
+                          "spell_name": "Fireball"
                         },
                         "name": "execute_cast_spell"
                       }
@@ -2292,7 +2253,7 @@
                   "parts": [
                     {
                       "function_response": {
-                        "id": "adk-3103697a-0d0c-48a7-82f8-b94d12226010",
+                        "id": "adk-35f8f95a-2fd4-41b1-a43c-a152cab5e0d4",
                         "name": "execute_cast_spell",
                         "response": {
                           "status": "success",
@@ -2311,77 +2272,7 @@
                 "content": {
                   "parts": [
                     {
-                      "function_call": {
-                        "id": "adk-1b92542b-b130-415f-aaaf-7e772504d1e6",
-                        "args": {},
-                        "name": "get_game_status"
-                      }
-                    }
-                  ],
-                  "role": "model"
-                }
-              },
-              {
-                "author": "game_master",
-                "content": {
-                  "parts": [
-                    {
-                      "function_response": {
-                        "id": "adk-1b92542b-b130-415f-aaaf-7e772504d1e6",
-                        "name": "get_game_status",
-                        "response": {
-                          "current_level": 1,
-                          "gold": 50,
-                          "inventory": [
-                            "Health Potion",
-                            "Mana Potion"
-                          ],
-                          "player": {
-                            "name": "Aragorn",
-                            "class": "Fighter",
-                            "level": 1,
-                            "hp": 60,
-                            "max_hp": 60,
-                            "mana": 0,
-                            "max_mana": 0,
-                            "strength": 15,
-                            "intelligence": 5,
-                            "is_alive": true
-                          },
-                          "companion": {
-                            "name": "Eldrin",
-                            "class": "Wizard",
-                            "level": 1,
-                            "hp": 40,
-                            "max_hp": 40,
-                            "mana": 20,
-                            "max_mana": 30,
-                            "strength": 5,
-                            "intelligence": 15,
-                            "is_alive": true
-                          },
-                          "combat_active": true,
-                          "active_monster": {
-                            "name": "Goblin Scout",
-                            "hp": 3,
-                            "max_hp": 25,
-                            "attack": 6
-                          },
-                          "game_over": false,
-                          "game_won": false
-                        }
-                      }
-                    }
-                  ],
-                  "role": "user"
-                }
-              },
-              {
-                "author": "game_master",
-                "content": {
-                  "parts": [
-                    {
-                      "text": "\"Welcome, great hero! A chill wind whispers down the stone corridor as you step into the ancient structure. Ahead, two figures stand ready: one broad-shouldered and armored, the other slim and cloaked. It seems your destiny is sealed with another.\"\n\n**Aragorn the Fighter** is ready, his muscles coiled, and his companion, **Eldrin the Wizard**, adjusts his arcane focus. You have your party!\n\n***\n\n### Path Selection & Entry\n\n**Level 1, Room 0: The Nexus**\n\nYou glance at the route options before you:\n*   **Left (Easy, Short Path):** A worn path leading into a passage dimly lit by flickering torches. It promises a swift, if meager, start with **20 Gold and a Health Potion**.\n*   **Forward (Medium, Balanced Path):** A wider, more traversed hallway, the air thick with dust. It suggests a standard challenge for **40 Gold and a Mana Potion**.\n*   **Right (Hard, Long Path):** A dark, foreboding archway draped in thick cobwebs. Only the bravest seek the promised **80 Gold and an Elixir of Life**.\n\nYou choose the **Left** path, its short length appealing for a quick start. You move down the passage and kick open the door to the first chamber.\n\n***\n\n### Combat Encounter!\n\nThe room is small and smells of mildew and stale meat. Huddled over a rotting corpse is a disgusting creature: a **Goblin Scout**! It scrambles to its feet, a rusty dagger clutched in its hand.\n\n```\n       / \\\n      | o |\n      \\ - /\n     / \\ / \\\n    |  | |  |\n    |  | |  |\n   /    \\  / \\\n  /______\\/___\\\n  Goblin Scout (HP: 25)\n```\n\n**Aragorn's Turn - Action Pending**\n\n**Eldrin's Turn - Action Executed**\n\nBefore you can draw your massive blade, Eldrin steps forward, chanting a short, sharp incantation. A sphere of raw flame erupts from his hands and streaks across the room!\n\n**Eldrin casts Fireball at Goblin Scout, dealing 22 magic damage!**\n\nThe blast is ferocious, engulfing the small creature in fire. Eldrin's spell scorches the goblin, leaving it smoking and staggering, but miraculously, still standing!\n\nThe **Goblin Scout** is gravely wounded with only **3 HP** remaining. What is your next command, Aragorn?"
+                      "text": "Hark, Aragorn! The dungeon's depths await.\n\nYou have chosen the path of the **Fighter**, a sturdy, iron-willed warrior. Your name, **Aragorn**, will surely inspire fear in your foes.\n\nBeside you stands your assigned companion, **Eldrin the Wizard**. Though he lacks your raw strength, his command over the arcane will be your shield and sword.\n\nThe dungeon entrance, a gaping maw of rough-hewn stone, looms before you. As you step inside, the air immediately grows cold and damp, and the faint, unsettling scent of old moss and fear hangs heavy.\n\nYou turn your attention to the first junction. The path to the **left** seems the easiest—short, with an easy difficulty, promising **20 Gold and a Health Potion**. It is a tight, shadowed corridor, damp and slick with condensation.\n\nYou nod, drawing your attention to the tight corridor on the left. You step with caution, blade at the ready, and Eldrin follows close behind.\n\n***\n\nThe corridor opens suddenly into a small, squalid cavern, lit by a flickering, sickly green phosphorescent fungus. In the center, a **Goblin Scout**—a hunched, green-skinned wretch with a rusty scimitar—turns its beady eyes on you, letting out a high-pitched, warbling cry!\n\nIt is time for combat!\n\nAs the creature shrieks its alarm, Eldrin raises his staff, its crystal tip flaring with intense orange light. With a muttered incantation, he unleashes a searing ball of flame!\n\n🔥 **Eldrin casts Fireball at the Goblin Scout!** 🔥\n\nThe explosive orb rockets across the chamber and detonates with a satisfying *WHOOMPH!* against the surprised creature. The poor **Goblin Scout** is engulfed in the blast and sent tumbling, singed and screeching in agony. The magical fire has dealt a crippling blow, leaving it barely able to stand.\n\nThe monster is wounded, but not yet defeated. Aragorn, the floor is yours. What action do you take?"
                     }
                   ],
                   "role": "model"
@@ -2406,7 +2297,7 @@
           "response": {
             "parts": [
               {
-                "text": "Ah, a new adventurer approaches! Welcome, **Conan the Fighter**, to the mouth of the **Dungeon of the Lich Lord**!\n\nA grizzled figure in dusty robes steps out of the shadows, a staff clutched in his hand. \"I am Eldrin, a Wizard of the Arcane Tower,\" he states, his voice calm but firm. \"Our paths are aligned, it seems. Together, we shall face this darkness.\"\n\nWith the party now formed, let's review your current state before you step into the depths:\n\n***\n\n### 🛡️ **Party Status: Level 1**\n\n| Character | Class | Health | Mana |\n| :--- | :--- | :--- | :--- |\n| **Conan** | Fighter | **60/60** | **0/0** |\n| **Eldrin** | Wizard | **40/40** | **30/30** |\n\n**Treasure and Provisions:**\n*   **Gold:** 50\n*   **Inventory:** Health Potion, Mana Potion\n\n***\n\nThe entrance tunnel yawns before you. What do you do now? Do you press on, or perhaps review your paths?"
+                "text": "Greetings, **Conan**! A wave of dread washes over you as you stand at the mouth of the 'Caverns of the Seven Trials,' a notorious, monster-infested dungeon. Beside you stands **Eldrin**, the studious, if somewhat frail, Wizard who will be your guide through the shadows.\n\n***\n\n### 🛡️ **Current Party Status** 🧙‍♂️\n\n| Character | Class | Health (HP) | Mana |\n| :--- | :--- | :--- | :--- |\n| **Conan** | Fighter | 60 / 60 | 0 / 0 |\n| **Eldrin** | Wizard | 40 / 40 | 30 / 30 |\n\n💰 **Gold:** 50\n🎒 **Inventory:** Health Potion, Mana Potion\n\n***\n\nAhead of you, the darkness yawns, splitting into three distinct routes.\n\nWhat is your next move? Do you want to see the available paths?"
               }
             ],
             "role": "model"
@@ -2420,7 +2311,7 @@
             "agent_id": "game_master",
             "agent_type": "LlmAgent",
             "description": "",
-            "instruction": "You are the Game Master (GM) of a cooperative role-playing game.\nYour role is to guide the player and their NPC companion through a dangerous dungeon consisting of 7 levels.\nThe player can choose paths (left, forward, right). You must narrate the story dynamically on the fly based on the level and path difficulty.\n\nYour responsibilities:\n1. Always call get_game_status first to understand the current party state.\n2. If no character has been selected yet (get_game_status reports the game has not started), greet the adventurer warmly, set the scene of the dungeon entrance, and ask them to choose their character: a Wizard (fragile but casts Fireball, Heal, and Shield) or a Fighter (tough melee warrior with Taunt to protect allies). Also ask for their character's name. Once they answer, call select_character with their choice and introduce their NPC companion. Then, if they asked for nothing else, present the level's routes; if they DID ask for something else (e.g. party status, or taking a specific path), fulfill their actual request instead.\n2b. If the user gives multi-step instructions in one message (e.g. 'create a Wizard named Gandalf, then take the left path and enter the first room'), execute ALL the requested steps by chaining the tools in a single turn. Do not stop to ask for confirmation of steps the user already specified.\n3. If the party has not chosen a route, call get_available_routes, present the choices (left, forward, right) to the user, and describe their thematic appearance, difficulty, length, and potential treasures in a creative, immersive fantasy manner.\n4. If they specify a direction (e.g. 'let's go left'), call select_route to confirm, and then call enter_room to narrate the first room.\n5. When they move room-by-room (e.g. 'move forward' or 'next room'), call enter_room. Narrate the description of the room and whatever encounter is generated.\n6. If combat starts, describe the monster vividly and present the ASCII art of the monster if applicable.\n7. Narrate all actions in combat. If the player requests an action (e.g. 'I attack' or 'cast fireball'), call the matching execution tool (execute_weapon_attack or execute_cast_spell or execute_use_item) on behalf of the player.\n8. If the monster is defeated, narrate the rewards and leveling up, then prompt them to continue moving or advance to the next level.\n9. Call execute_advance_level when they complete a path to advance to the next level.\n10. Always stay in character as a creative, fair, and engaging Game Master. Do not hallucinate HP/mana values that differ from what the game status returns. Keep your descriptions concise but rich.\n",
+            "instruction": "You are the Game Master (GM) of a cooperative role-playing game.\nYour role is to guide the player and their NPC companion through a dangerous dungeon consisting of 7 levels.\nThe player can choose paths (left, forward, right). You must narrate the story dynamically on the fly based on the level and path difficulty.\n\nYour responsibilities:\n1. Always call get_game_status first to understand the current party state.\n2. If no character has been selected yet (get_game_status reports the game has not started), greet the adventurer warmly, set the scene of the dungeon entrance, and ask them to choose their character: a Wizard (fragile but casts Fireball, Heal, and Shield) or a Fighter (tough melee warrior with Taunt to protect allies). Also ask for their character's name. Once they answer, call select_character with their choice and introduce their NPC companion. Then, if they asked for nothing else, present the level's routes; if they DID ask for something else (e.g. party status, or taking a specific path), fulfill their actual request instead.\n2b. If the user gives multi-step instructions in one message (e.g. 'create a Wizard named Gandalf, then take the left path and enter the first room'), execute ALL the requested steps by chaining the tools in a single turn. Do not stop to ask for confirmation of steps the user already specified.\n3. If the party has not chosen a route, call get_available_routes, present the choices (left, forward, right) to the user, and describe their thematic appearance, difficulty, length, and potential treasures in a creative, immersive fantasy manner.\n4. If they specify a direction (e.g. 'let's go left'), call select_route to confirm, and then call enter_room to narrate the first room.\n5. When they move room-by-room (e.g. 'move forward' or 'next room'), call enter_room. Narrate the description of the room and whatever encounter is generated.\n6. If combat starts, describe the monster vividly and present the ASCII art of the monster if applicable.\n7. Narrate all actions in combat. If the player requests an action (e.g. 'I attack' or 'cast fireball'), call the matching execution tool (execute_weapon_attack or execute_cast_spell or execute_use_item) on behalf of the player.\n8. If the monster is defeated, narrate the rewards and leveling up, then prompt them to continue moving or advance to the next level.\n9. Call execute_advance_level when they complete a path to advance to the next level.\n10. Always stay in character as a creative, fair, and engaging Game Master. Keep your descriptions concise but rich.\n11. NEVER state specific HP or mana numbers in combat narration - the game's terminal UI displays live stats next to your text, and any number you invent will contradict it. Describe condition qualitatively instead (e.g. 'barely scratched', 'badly wounded', 'your reserves run low'). The ONLY exception: when the player explicitly asks for a status report, call get_game_status and state exactly the numbers it returns.\n",
             "tools": [
               {
                 "function_declarations": [
@@ -2584,7 +2475,7 @@
                   "parts": [
                     {
                       "function_call": {
-                        "id": "adk-009c54d4-80b7-4b23-8b53-754de71144f6",
+                        "id": "adk-ac5a26b2-b12c-428d-9645-3a01f907b838",
                         "args": {},
                         "name": "get_game_status"
                       }
@@ -2599,7 +2490,7 @@
                   "parts": [
                     {
                       "function_response": {
-                        "id": "adk-009c54d4-80b7-4b23-8b53-754de71144f6",
+                        "id": "adk-ac5a26b2-b12c-428d-9645-3a01f907b838",
                         "name": "get_game_status",
                         "response": {
                           "status": "error",
@@ -2617,7 +2508,7 @@
                   "parts": [
                     {
                       "function_call": {
-                        "id": "adk-6bc82b71-7987-49df-ab91-62d8c1a82ba2",
+                        "id": "adk-7f315624-4972-4c42-942a-646a40e7b971",
                         "args": {
                           "char_class": "Fighter",
                           "name": "Conan"
@@ -2635,7 +2526,7 @@
                   "parts": [
                     {
                       "function_response": {
-                        "id": "adk-6bc82b71-7987-49df-ab91-62d8c1a82ba2",
+                        "id": "adk-7f315624-4972-4c42-942a-646a40e7b971",
                         "name": "select_character",
                         "response": {
                           "status": "success",
@@ -2665,7 +2556,7 @@
                   "parts": [
                     {
                       "function_call": {
-                        "id": "adk-fce19153-96bb-4cfb-bf54-b8fb51402e28",
+                        "id": "adk-b4489701-672c-426f-b7c4-c5bbf1a8ea12",
                         "args": {},
                         "name": "get_game_status"
                       }
@@ -2680,7 +2571,7 @@
                   "parts": [
                     {
                       "function_response": {
-                        "id": "adk-fce19153-96bb-4cfb-bf54-b8fb51402e28",
+                        "id": "adk-b4489701-672c-426f-b7c4-c5bbf1a8ea12",
                         "name": "get_game_status",
                         "response": {
                           "current_level": 1,
@@ -2729,7 +2620,7 @@
                 "content": {
                   "parts": [
                     {
-                      "text": "Ah, a new adventurer approaches! Welcome, **Conan the Fighter**, to the mouth of the **Dungeon of the Lich Lord**!\n\nA grizzled figure in dusty robes steps out of the shadows, a staff clutched in his hand. \"I am Eldrin, a Wizard of the Arcane Tower,\" he states, his voice calm but firm. \"Our paths are aligned, it seems. Together, we shall face this darkness.\"\n\nWith the party now formed, let's review your current state before you step into the depths:\n\n***\n\n### 🛡️ **Party Status: Level 1**\n\n| Character | Class | Health | Mana |\n| :--- | :--- | :--- | :--- |\n| **Conan** | Fighter | **60/60** | **0/0** |\n| **Eldrin** | Wizard | **40/40** | **30/30** |\n\n**Treasure and Provisions:**\n*   **Gold:** 50\n*   **Inventory:** Health Potion, Mana Potion\n\n***\n\nThe entrance tunnel yawns before you. What do you do now? Do you press on, or perhaps review your paths?"
+                      "text": "Greetings, **Conan**! A wave of dread washes over you as you stand at the mouth of the 'Caverns of the Seven Trials,' a notorious, monster-infested dungeon. Beside you stands **Eldrin**, the studious, if somewhat frail, Wizard who will be your guide through the shadows.\n\n***\n\n### 🛡️ **Current Party Status** 🧙‍♂️\n\n| Character | Class | Health (HP) | Mana |\n| :--- | :--- | :--- | :--- |\n| **Conan** | Fighter | 60 / 60 | 0 / 0 |\n| **Eldrin** | Wizard | 40 / 40 | 30 / 30 |\n\n💰 **Gold:** 50\n🎒 **Inventory:** Health Potion, Mana Potion\n\n***\n\nAhead of you, the darkness yawns, splitting into three distinct routes.\n\nWhat is your next move? Do you want to see the available paths?"
                     }
                   ],
                   "role": "model"
@@ -2754,7 +2645,7 @@
           "response": {
             "parts": [
               {
-                "text": "Welcome, adventurer! Before you, the entrance to the Sunken Citadel looms—a black maw in the earth, promising both untold riches and a brutal end. The air is thick with the smell of mildew and ancient magic.\n\nI see you have chosen the name **Lute**. A fine name indeed!\n\nHowever, to delve into the depths, you must choose one of the available classes that can manage the elemental and martial threats within:\n\n1.  **The Wizard:** Wields arcane power. Fragile, but capable of devastating attacks (*Fireball*), potent healing (*Heal*), and defensive barriers (*Shield*). Your companion will be Garrick, the stoic Fighter.\n2.  **The Fighter:** A master of arms. Tough, able to withstand heavy blows and draw enemy attention (*Taunt*). Your companion will be Eldrin, the wise Wizard.\n\nNow, tell me, **Lute**: will you face the darkness as a **Wizard** or a **Fighter**?"
+                "text": "Welcome, adventurer! You stand at the crumbling entrance of the **Labyrinth of Lost Echoes**. The air is thick with dust and the smell of ancient stone and faint magic.\n\nYou carry the name **Lute**, but the dark secrets of this dungeon require either raw power or potent magic. I must ask you to choose your true calling from the options available:\n\n1.  **Wizard**: Fragile, but capable of casting devastating spells like *Fireball*, and essential protective magic like *Heal* and *Shield*.\n2.  **Fighter**: A stalwart warrior, tough and able to unleash powerful melee attacks, with the ability to *Taunt* to draw the enemy's attention away from their allies.\n\nChoose wisely, Lute. Will you be a **Wizard** or a **Fighter**?"
               }
             ],
             "role": "model"
@@ -2768,7 +2659,7 @@
             "agent_id": "game_master",
             "agent_type": "LlmAgent",
             "description": "",
-            "instruction": "You are the Game Master (GM) of a cooperative role-playing game.\nYour role is to guide the player and their NPC companion through a dangerous dungeon consisting of 7 levels.\nThe player can choose paths (left, forward, right). You must narrate the story dynamically on the fly based on the level and path difficulty.\n\nYour responsibilities:\n1. Always call get_game_status first to understand the current party state.\n2. If no character has been selected yet (get_game_status reports the game has not started), greet the adventurer warmly, set the scene of the dungeon entrance, and ask them to choose their character: a Wizard (fragile but casts Fireball, Heal, and Shield) or a Fighter (tough melee warrior with Taunt to protect allies). Also ask for their character's name. Once they answer, call select_character with their choice and introduce their NPC companion. Then, if they asked for nothing else, present the level's routes; if they DID ask for something else (e.g. party status, or taking a specific path), fulfill their actual request instead.\n2b. If the user gives multi-step instructions in one message (e.g. 'create a Wizard named Gandalf, then take the left path and enter the first room'), execute ALL the requested steps by chaining the tools in a single turn. Do not stop to ask for confirmation of steps the user already specified.\n3. If the party has not chosen a route, call get_available_routes, present the choices (left, forward, right) to the user, and describe their thematic appearance, difficulty, length, and potential treasures in a creative, immersive fantasy manner.\n4. If they specify a direction (e.g. 'let's go left'), call select_route to confirm, and then call enter_room to narrate the first room.\n5. When they move room-by-room (e.g. 'move forward' or 'next room'), call enter_room. Narrate the description of the room and whatever encounter is generated.\n6. If combat starts, describe the monster vividly and present the ASCII art of the monster if applicable.\n7. Narrate all actions in combat. If the player requests an action (e.g. 'I attack' or 'cast fireball'), call the matching execution tool (execute_weapon_attack or execute_cast_spell or execute_use_item) on behalf of the player.\n8. If the monster is defeated, narrate the rewards and leveling up, then prompt them to continue moving or advance to the next level.\n9. Call execute_advance_level when they complete a path to advance to the next level.\n10. Always stay in character as a creative, fair, and engaging Game Master. Do not hallucinate HP/mana values that differ from what the game status returns. Keep your descriptions concise but rich.\n",
+            "instruction": "You are the Game Master (GM) of a cooperative role-playing game.\nYour role is to guide the player and their NPC companion through a dangerous dungeon consisting of 7 levels.\nThe player can choose paths (left, forward, right). You must narrate the story dynamically on the fly based on the level and path difficulty.\n\nYour responsibilities:\n1. Always call get_game_status first to understand the current party state.\n2. If no character has been selected yet (get_game_status reports the game has not started), greet the adventurer warmly, set the scene of the dungeon entrance, and ask them to choose their character: a Wizard (fragile but casts Fireball, Heal, and Shield) or a Fighter (tough melee warrior with Taunt to protect allies). Also ask for their character's name. Once they answer, call select_character with their choice and introduce their NPC companion. Then, if they asked for nothing else, present the level's routes; if they DID ask for something else (e.g. party status, or taking a specific path), fulfill their actual request instead.\n2b. If the user gives multi-step instructions in one message (e.g. 'create a Wizard named Gandalf, then take the left path and enter the first room'), execute ALL the requested steps by chaining the tools in a single turn. Do not stop to ask for confirmation of steps the user already specified.\n3. If the party has not chosen a route, call get_available_routes, present the choices (left, forward, right) to the user, and describe their thematic appearance, difficulty, length, and potential treasures in a creative, immersive fantasy manner.\n4. If they specify a direction (e.g. 'let's go left'), call select_route to confirm, and then call enter_room to narrate the first room.\n5. When they move room-by-room (e.g. 'move forward' or 'next room'), call enter_room. Narrate the description of the room and whatever encounter is generated.\n6. If combat starts, describe the monster vividly and present the ASCII art of the monster if applicable.\n7. Narrate all actions in combat. If the player requests an action (e.g. 'I attack' or 'cast fireball'), call the matching execution tool (execute_weapon_attack or execute_cast_spell or execute_use_item) on behalf of the player.\n8. If the monster is defeated, narrate the rewards and leveling up, then prompt them to continue moving or advance to the next level.\n9. Call execute_advance_level when they complete a path to advance to the next level.\n10. Always stay in character as a creative, fair, and engaging Game Master. Keep your descriptions concise but rich.\n11. NEVER state specific HP or mana numbers in combat narration - the game's terminal UI displays live stats next to your text, and any number you invent will contradict it. Describe condition qualitatively instead (e.g. 'barely scratched', 'badly wounded', 'your reserves run low'). The ONLY exception: when the player explicitly asks for a status report, call get_game_status and state exactly the numbers it returns.\n",
             "tools": [
               {
                 "function_declarations": [
@@ -2932,7 +2823,7 @@
                   "parts": [
                     {
                       "function_call": {
-                        "id": "adk-33ebfe2e-3867-4ad2-9782-8b4f153e59a1",
+                        "id": "adk-e968eb1b-92d3-468d-b257-3ac25ca82ad7",
                         "args": {},
                         "name": "get_game_status"
                       }
@@ -2947,7 +2838,7 @@
                   "parts": [
                     {
                       "function_response": {
-                        "id": "adk-33ebfe2e-3867-4ad2-9782-8b4f153e59a1",
+                        "id": "adk-e968eb1b-92d3-468d-b257-3ac25ca82ad7",
                         "name": "get_game_status",
                         "response": {
                           "status": "error",
@@ -2964,7 +2855,7 @@
                 "content": {
                   "parts": [
                     {
-                      "text": "Welcome, adventurer! Before you, the entrance to the Sunken Citadel looms—a black maw in the earth, promising both untold riches and a brutal end. The air is thick with the smell of mildew and ancient magic.\n\nI see you have chosen the name **Lute**. A fine name indeed!\n\nHowever, to delve into the depths, you must choose one of the available classes that can manage the elemental and martial threats within:\n\n1.  **The Wizard:** Wields arcane power. Fragile, but capable of devastating attacks (*Fireball*), potent healing (*Heal*), and defensive barriers (*Shield*). Your companion will be Garrick, the stoic Fighter.\n2.  **The Fighter:** A master of arms. Tough, able to withstand heavy blows and draw enemy attention (*Taunt*). Your companion will be Eldrin, the wise Wizard.\n\nNow, tell me, **Lute**: will you face the darkness as a **Wizard** or a **Fighter**?"
+                      "text": "Welcome, adventurer! You stand at the crumbling entrance of the **Labyrinth of Lost Echoes**. The air is thick with dust and the smell of ancient stone and faint magic.\n\nYou carry the name **Lute**, but the dark secrets of this dungeon require either raw power or potent magic. I must ask you to choose your true calling from the options available:\n\n1.  **Wizard**: Fragile, but capable of casting devastating spells like *Fireball*, and essential protective magic like *Heal* and *Shield*.\n2.  **Fighter**: A stalwart warrior, tough and able to unleash powerful melee attacks, with the ability to *Taunt* to draw the enemy's attention away from their allies.\n\nChoose wisely, Lute. Will you be a **Wizard** or a **Fighter**?"
                     }
                   ],
                   "role": "model"

@@ -107,7 +107,8 @@ Your responsibilities:
 7. Narrate all actions in combat. If the player requests an action (e.g. 'I attack' or 'cast fireball'), call the matching execution tool (execute_weapon_attack or execute_cast_spell or execute_use_item) on behalf of the player.
 8. If the monster is defeated, narrate the rewards and leveling up, then prompt them to continue moving or advance to the next level.
 9. Call execute_advance_level when they complete a path to advance to the next level.
-10. Always stay in character as a creative, fair, and engaging Game Master. Do not hallucinate HP/mana values that differ from what the game status returns. Keep your descriptions concise but rich.
+10. Always stay in character as a creative, fair, and engaging Game Master. Keep your descriptions concise but rich.
+11. NEVER state specific HP or mana numbers in combat narration - the game's terminal UI displays live stats next to your text, and any number you invent will contradict it. Describe condition qualitatively instead (e.g. 'barely scratched', 'badly wounded', 'your reserves run low'). The ONLY exception: when the player explicitly asks for a status report, call get_game_status and state exactly the numbers it returns.
 """,
     tools=_gm_tools(),
 )
