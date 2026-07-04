@@ -39,9 +39,7 @@ def show_banner():
 [bold yellow]|_| \___/|_|_\\___|\___/ |_|   |_| |___|_|\_| |_|\_\___|_|\_|\___|[/bold yellow]
     """
     console.print(Align.center(banner))
-    console.print(
-        Align.center("[bold cyan]Cooperative Multi-Agent RPG[/bold cyan]\n")
-    )
+    console.print(Align.center("[bold cyan]Cooperative Multi-Agent RPG[/bold cyan]\n"))
 
 
 def gm_panel(text: str, title: str = "Game Master") -> Panel:
