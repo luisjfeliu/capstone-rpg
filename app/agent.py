@@ -16,6 +16,7 @@ from app.tools import (
     enter_room,
     execute_weapon_attack,
     execute_cast_spell,
+    execute_taunt,
     execute_use_item,
     execute_advance_level,
 )
@@ -55,6 +56,7 @@ def _gm_tools() -> list:
         enter_room,
         execute_weapon_attack,
         execute_cast_spell,
+        execute_taunt,
         execute_use_item,
         execute_advance_level,
     ]
@@ -71,16 +73,17 @@ companion_agent = Agent(
 Your class is either a Wizard (who can cast spells: Fireball, Heal, Shield) or a Fighter (who can perform weapon attacks, use Taunt, and protect the player).
 Analyze the current game status by calling the get_game_status tool.
 Make a smart tactical decision in combat:
-- If you are a Fighter and your Wizard ally is low on HP (< 30%), you must use Taunt or attack.
+- If you are a Fighter and your Wizard ally is low on HP (< 30%), call execute_taunt to draw the monster's next attack onto yourself; otherwise attack.
 - If you are a Wizard and your Fighter ally is low on HP (< 40%), cast Heal on them.
 - If you have mana, the enemy has high HP, and your party is safe, cast Fireball.
 - Otherwise, execute a standard weapon attack.
-Always call the appropriate tool to execute your action. After calling the tool, respond in character with a short dialogue line (1-2 sentences) explaining your action (e.g. 'I will draw their attention!' or 'Feel the burn of my fireball!').
+Always call the appropriate tool to execute your action - an action only happens if its tool was called; never claim to taunt, attack, or cast without the tool call. After calling the tool, respond in character with a short dialogue line (1-2 sentences) explaining your action (e.g. 'I will draw their attention!' or 'Feel the burn of my fireball!').
 """,
     tools=[
         get_game_status,
         execute_weapon_attack,
         execute_cast_spell,
+        execute_taunt,
         execute_use_item,
     ],
 )
@@ -104,11 +107,12 @@ Your responsibilities:
 4. If they specify a direction (e.g. 'let's go left'), call select_route to confirm, and then call enter_room to narrate the first room.
 5. When they move room-by-room (e.g. 'move forward' or 'next room'), call enter_room. Narrate the description of the room and whatever encounter is generated.
 6. If combat starts, describe the monster vividly and present the ASCII art of the monster if applicable.
-7. Narrate all actions in combat. If the player requests an action (e.g. 'I attack' or 'cast fireball'), call the matching execution tool (execute_weapon_attack or execute_cast_spell or execute_use_item) on behalf of the player.
+7. Narrate all actions in combat. If the player requests an action (e.g. 'I attack', 'cast fireball', 'I taunt'), call the matching execution tool (execute_weapon_attack, execute_cast_spell, execute_taunt, or execute_use_item) on behalf of the player. When narrating the monster's attack, describe EXACTLY the target named in the combat log - never say it struck a different character.
 8. If the monster is defeated, narrate the rewards and leveling up, then prompt them to continue moving or advance to the next level.
 9. Call execute_advance_level when they complete a path to advance to the next level.
 10. Always stay in character as a creative, fair, and engaging Game Master. Keep your descriptions concise but rich.
-11. NEVER state specific HP or mana numbers in combat narration - the game's terminal UI displays live stats next to your text, and any number you invent will contradict it. Describe condition qualitatively instead (e.g. 'barely scratched', 'badly wounded', 'your reserves run low'). The ONLY exception: when the player explicitly asks for a status report, call get_game_status and state exactly the numbers it returns.
+11. In combat narration, never invent HP or mana numbers - the game's terminal UI displays live stats next to your text, and any number you make up will contradict it. Describe condition qualitatively (e.g. 'barely scratched', 'badly wounded', 'your reserves run low'). You may quote damage or healing amounts that an execution tool just reported.
+12. When the player asks for a status report or how the party is doing, you MUST call get_game_status and include the exact numbers it returns (HP, mana, gold, inventory) in your final answer - do not withhold them.
 """,
     tools=_gm_tools(),
 )

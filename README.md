@@ -132,13 +132,14 @@ death, victory, and the companion's cooperative logic — executed with `behave`
 
 Agent quality is measured with `agents-cli eval`: a dataset of game scenarios
 (`tests/eval/datasets/basic-dataset.json`) is run against the live GM agent and
-graded by an LLM judge (`tests/eval/eval_config.yaml`). Latest run:
-**mean 5.0 / 5** across 8 cases (results in `artifacts/grade_results/`).
+graded by an LLM judge (`tests/eval/eval_config.yaml`). Recent runs score
+**4.9–5.0 / 5** across 8 cases (results in `artifacts/grade_results/`).
 The eval loop caught real bugs during development — the GM asking for
 confirmation instead of executing multi-step commands (4.125 → 4.875 after
-instruction fixes), and later narrating hallucinated HP numbers that
-contradicted the live status panel (fixed with a no-invented-numbers rule,
-reaching 5.0).
+instruction fixes), later narrating hallucinated HP numbers that contradicted
+the live status panel (fixed with a no-invented-numbers rule), and that rule
+initially over-firing to suppress legitimate status reports (caught by the
+eval suite at 1.0/5 and fixed the same day).
 
 ## Local end-to-end runbook
 

@@ -20,6 +20,7 @@ from app.tools import (
     enter_room,
     execute_advance_level,
     execute_cast_spell,
+    execute_taunt,
     execute_use_item,
     execute_weapon_attack,
     get_available_routes,
@@ -40,6 +41,7 @@ for tool_fn in (
     enter_room,
     execute_weapon_attack,
     execute_cast_spell,
+    execute_taunt,
     execute_use_item,
     execute_advance_level,
 ):

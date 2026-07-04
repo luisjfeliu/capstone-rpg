@@ -6,8 +6,8 @@ that same object - rebinding the name would break the reference the tools
 module already holds.
 """
 
-from app.engine import global_game_state
-from app.tools import get_game_status, select_character
+from app.engine import Monster, global_game_state
+from app.tools import execute_taunt, get_game_status, select_character
 
 
 def _reset_state():
@@ -64,3 +64,35 @@ def test_get_game_status_errors_before_selection_then_reports_party():
     assert status["player"]["name"] == "Gandalf"
     assert status["companion"]["is_alive"] is True
     assert status["combat_active"] is False
+
+
+def test_execute_taunt_redirects_monster_to_fighter():
+    _reset_state()
+    select_character("Wizard", "Gandalf")  # companion Garrick is the Fighter
+    global_game_state.active_monster = Monster(
+        "Goblin Scout", hp=30, attack=5, xp_reward=10, gold_reward=5
+    )
+    global_game_state.combat_active = True
+
+    result = execute_taunt("Garrick")
+    assert result["status"] == "success"
+    assert global_game_state.companion.is_taunting
+
+    # The taunt must actually redirect the monster's attack
+    log = global_game_state.monster_attack()
+    assert "Garrick" in log
+    assert global_game_state.player.hp == global_game_state.player.max_hp
+
+
+def test_execute_taunt_rejected_for_wizard_and_outside_combat():
+    _reset_state()
+    select_character("Wizard", "Gandalf")
+    assert execute_taunt("Gandalf")["status"] == "error"  # no combat
+
+    global_game_state.active_monster = Monster(
+        "Goblin Scout", hp=30, attack=5, xp_reward=10, gold_reward=5
+    )
+    global_game_state.combat_active = True
+    result = execute_taunt("Gandalf")  # Wizards cannot taunt
+    assert result["status"] == "error"
+    assert "only Fighters" in result["message"]

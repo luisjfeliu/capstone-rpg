@@ -488,7 +488,7 @@ def main():
             monster_log = global_game_state.monster_attack()
             gm_monster_narr = run_agent_turn(
                 runner_gm,
-                f"The monster attacked: '{monster_log}'. Resolve this action, check if anyone is dead, and narrate the monster's turn in a dramatic way.",
+                f"The monster attacked: '{monster_log}'. This already happened exactly as stated - narrate it dramatically, striking ONLY the character named in that log. Check if anyone is dead.",
                 session_id,
                 user_id,
             )

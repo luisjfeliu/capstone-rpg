@@ -21,6 +21,7 @@ EXPECTED_TOOLS = {
     "enter_room",
     "execute_weapon_attack",
     "execute_cast_spell",
+    "execute_taunt",
     "execute_use_item",
     "execute_advance_level",
 }

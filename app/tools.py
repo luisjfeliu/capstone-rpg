@@ -284,6 +284,51 @@ def execute_cast_spell(attacker_name: str, spell_name: str, target: str) -> dict
     }
 
 
+def execute_taunt(character_name: str) -> dict:
+    """Makes a Fighter taunt the monster, forcing it to attack them on its next turn.
+
+    Taunting is how a Fighter protects a wounded ally: the monster's next
+    attack is redirected to the taunting character instead of being chosen
+    at random. The effect lasts for one monster turn.
+
+    Args:
+        character_name: The name of the Fighter who taunts.
+
+    Returns:
+        A dictionary confirming the taunt or an error.
+    """
+    g = global_game_state
+    if not g.combat_active or not g.active_monster:
+        return {"status": "error", "message": "No active combat."}
+
+    character = None
+    if g.player.name.lower() == character_name.lower():
+        character = g.player
+    elif g.companion.name.lower() == character_name.lower():
+        character = g.companion
+
+    if not character:
+        return {
+            "status": "error",
+            "message": f"Character {character_name} not found in party.",
+        }
+    if character.char_class != "Fighter":
+        return {
+            "status": "error",
+            "message": f"{character.name} is a {character.char_class} - only Fighters can Taunt.",
+        }
+    if not character.is_alive():
+        return {
+            "status": "error",
+            "message": f"{character.name} is unconscious and cannot taunt.",
+        }
+
+    character.is_taunting = True
+    log = f"{character.name} taunts the {g.active_monster.name}, drawing its attention!"
+    g.combat_log.append(log)
+    return {"status": "success", "log": log}
+
+
 def execute_use_item(character_name: str, potion_name: str) -> dict:
     """Uses a potion or elixir from inventory on the specified character.
 
