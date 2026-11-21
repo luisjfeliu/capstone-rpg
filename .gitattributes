@@ -1,0 +1,2 @@
+# Exclude generated HTML reports from GitHub language statistics.
+/artifacts/grade_results/*.html linguist-generated=true
